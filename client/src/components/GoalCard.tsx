@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { WorkoutChart } from "./WorkoutChart";
-import { Target, TrendingUp, Calendar, Edit, Plus } from "lucide-react";
+import { Target, Calendar, Edit, Plus, Sparkles } from "lucide-react";
 
 interface GoalCardProps {
   id: string;
@@ -74,6 +74,9 @@ export function GoalCard({
             <span className="text-sm font-mono">
               {currentValue} / {targetValue} {unit}
             </span>
+            {isCompleted && (
+              <Sparkles className="h-4 w-4 text-primary" data-testid="icon-goal-achieved" />
+            )}
           </div>
           <Progress value={progress} className="h-2 mb-2" />
           <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
@@ -94,15 +97,6 @@ export function GoalCard({
             className="border-t pt-2"
           />
         </div>
-        
-        {isCompleted && (
-          <div className="bg-primary/10 border border-primary/20 rounded-md p-2 mb-2">
-            <div className="flex items-center gap-2 text-sm font-medium text-primary">
-              <TrendingUp className="h-4 w-4" />
-              Goal Achieved! 🎉
-            </div>
-          </div>
-        )}
         
         {onAddProgress && (
           <Button
