@@ -37,6 +37,7 @@ interface AddGoalDialogProps {
   onSubmit: (goal: {
     exerciseId: string;
     targetValue: number;
+    unit: string;
     targetDate: Date;
   }) => void;
 }
@@ -44,23 +45,26 @@ interface AddGoalDialogProps {
 export function AddGoalDialog({ open, onOpenChange, exercises, onSubmit }: AddGoalDialogProps) {
   const [exerciseId, setExerciseId] = useState("");
   const [targetValue, setTargetValue] = useState("");
+  const [unit, setUnit] = useState("KGs");
   const [targetDate, setTargetDate] = useState<Date>();
 
   const selectedExercise = exercises.find(ex => ex.id === exerciseId);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!exerciseId || !targetValue || !targetDate) return;
+    if (!exerciseId || !targetValue || !unit || !targetDate) return;
 
     onSubmit({
       exerciseId,
       targetValue: parseFloat(targetValue),
+      unit,
       targetDate,
     });
 
     // Reset form
     setExerciseId("");
     setTargetValue("");
+    setUnit("KGs");
     setTargetDate(undefined);
     onOpenChange(false);
   };
@@ -91,19 +95,30 @@ export function AddGoalDialog({ open, onOpenChange, exercises, onSubmit }: AddGo
             </Select>
           </div>
 
+          {/* Target and Unit (same row) */}
           <div className="space-y-2">
-            <Label htmlFor="targetValue">
-              Target Value {selectedExercise && `(${selectedExercise.unit})`}
-            </Label>
-            <Input
-              id="targetValue"
-              type="number"
-              placeholder="Enter target value"
-              value={targetValue}
-              onChange={(e) => setTargetValue(e.target.value)}
-              data-testid="input-target-value"
-              required
-            />
+            <Label htmlFor="targetValue">Target</Label>
+            <div className="flex items-center gap-2">
+              <Input
+                id="targetValue"
+                type="number"
+                value={targetValue}
+                onChange={(e) => setTargetValue(e.target.value)}
+                placeholder="Enter target value"
+                className="flex-1"
+                data-testid="input-target-value"
+              />
+              <Select value={unit} onValueChange={setUnit}>
+                <SelectTrigger className="w-24" data-testid="select-unit">
+                  <SelectValue placeholder="Unit" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="KGs">KGs</SelectItem>
+                  <SelectItem value="Reps">Reps</SelectItem>
+                  <SelectItem value="KMs">KMs</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             {selectedExercise?.description && (
               <p className="text-xs text-muted-foreground">
                 {selectedExercise.description}
