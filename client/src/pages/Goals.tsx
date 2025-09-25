@@ -2,6 +2,7 @@ import { useState } from "react";
 import { GoalCard } from "@/components/GoalCard";
 import { AddGoalDialog } from "@/components/AddGoalDialog";
 import { AddWorkoutDialog } from "@/components/AddWorkoutDialog";
+import { EditGoalDialog } from "@/components/EditGoalDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -75,6 +76,8 @@ const mockGoals = [
 export default function Goals() {
   const [showAddGoal, setShowAddGoal] = useState(false);
   const [showAddWorkout, setShowAddWorkout] = useState(false);
+  const [showEditGoal, setShowEditGoal] = useState(false);
+  const [selectedGoalForEdit, setSelectedGoalForEdit] = useState<typeof mockGoals[0] | null>(null);
   const [selectedExerciseId, setSelectedExerciseId] = useState<string>();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
@@ -83,14 +86,21 @@ export default function Goals() {
 
   const handleEditGoal = (id: string) => {
     const goal = mockGoals.find(g => g.id === id);
-    console.log('Edit goal:', id);
+    if (goal) {
+      setSelectedGoalForEdit(goal);
+      setShowEditGoal(true);
+    }
+  };
+
+  const handleUpdateGoal = (goalId: string, updates: { targetValue: number; targetDate: Date }) => {
+    console.log('Updating goal:', goalId, updates);
     
     toast({
-      title: "Edit Goal",
-      description: `Edit functionality for ${goal?.exerciseName || 'goal'} is coming soon!`,
+      title: "Goal Updated",
+      description: `Successfully updated target to ${updates.targetValue} by ${updates.targetDate.toLocaleDateString()}`,
     });
     
-    // TODO: Implement edit goal functionality
+    // TODO: Implement actual goal update functionality with backend
   };
 
   const handleAddProgress = (goalId: string) => {
@@ -230,6 +240,16 @@ export default function Goals() {
         onOpenChange={setShowAddGoal}
         exercises={mockExercises}
         onSubmit={handleAddGoal}
+      />
+
+      <EditGoalDialog
+        open={showEditGoal}
+        onOpenChange={(open) => {
+          setShowEditGoal(open);
+          if (!open) setSelectedGoalForEdit(null);
+        }}
+        goal={selectedGoalForEdit}
+        onSubmit={handleUpdateGoal}
       />
 
       <AddWorkoutDialog
