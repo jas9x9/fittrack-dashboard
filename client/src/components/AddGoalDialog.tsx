@@ -113,9 +113,15 @@ export function AddGoalDialog({ open, onOpenChange, exercises, onSubmit }: AddGo
                   <SelectValue placeholder="Unit" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="KGs">KGs</SelectItem>
-                  <SelectItem value="Reps">Reps</SelectItem>
-                  <SelectItem value="KMs">KMs</SelectItem>
+                  <SelectItem value="KGs">
+                    <span className="text-foreground">KGs</span>
+                  </SelectItem>
+                  <SelectItem value="Reps">
+                    <span className="text-foreground">Reps</span>
+                  </SelectItem>
+                  <SelectItem value="KMs">
+                    <span className="text-foreground">KMs</span>
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
