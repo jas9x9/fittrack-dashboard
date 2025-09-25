@@ -16,11 +16,13 @@ import {
 
 // TODO: Remove mock data when implementing real backend
 const mockExercises = [
-  { id: '1', name: 'Bench Press', unit: 'lbs', description: 'Chest and tricep strength exercise' },
-  { id: '2', name: 'Squats', unit: 'lbs', description: 'Lower body compound movement' },
-  { id: '3', name: 'Running', unit: 'miles', description: 'Cardiovascular endurance' },
-  { id: '4', name: 'Push-ups', unit: 'reps', description: 'Bodyweight upper body exercise' },
-  { id: '5', name: 'Deadlift', unit: 'lbs', description: 'Full body compound lift' },
+  { id: '1', name: 'Squats', unit: 'lbs', description: 'Lower body compound movement' },
+  { id: '2', name: 'Deadlift', unit: 'lbs', description: 'Full body compound lift' },
+  { id: '3', name: 'Bench Press', unit: 'lbs', description: 'Chest and tricep strength exercise' },
+  { id: '4', name: 'Shoulder Press', unit: 'lbs', description: 'Overhead pressing movement' },
+  { id: '5', name: 'Push Ups', unit: 'reps', description: 'Bodyweight upper body exercise' },
+  { id: '6', name: 'Pull Ups', unit: 'reps', description: 'Bodyweight pulling exercise' },
+  { id: '7', name: 'Running', unit: 'miles', description: 'Cardiovascular endurance' },
 ];
 
 const mockGoals = [
