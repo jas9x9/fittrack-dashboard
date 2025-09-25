@@ -12,9 +12,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Target, Calendar as CalendarLucide } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
-import { Badge } from "@/components/ui/badge";
 
 interface Goal {
   id: string;
@@ -31,41 +30,32 @@ interface EditGoalDialogProps {
   onOpenChange: (open: boolean) => void;
   goal: Goal | null;
   onSubmit: (goalId: string, updates: {
+    exerciseName: string;
     targetValue: number;
     targetDate: Date;
   }) => void;
 }
 
 export function EditGoalDialog({ open, onOpenChange, goal, onSubmit }: EditGoalDialogProps) {
+  const [exerciseName, setExerciseName] = useState("");
   const [targetValue, setTargetValue] = useState("");
   const [targetDate, setTargetDate] = useState<Date>();
 
   // Populate form when goal changes
   useEffect(() => {
     if (goal) {
+      setExerciseName(goal.exerciseName);
       setTargetValue(goal.targetValue.toString());
       setTargetDate(new Date(goal.targetDate));
     }
   }, [goal]);
 
-  const getCategoryColor = (category: string) => {
-    switch (category.toLowerCase()) {
-      case "strength":
-        return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400";
-      case "cardio":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400";
-      case "flexibility":
-        return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400";
-      default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
-    }
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!goal || !targetValue || !targetDate) return;
+    if (!goal || !exerciseName || !targetValue || !targetDate) return;
 
     onSubmit(goal.id, {
+      exerciseName,
       targetValue: parseFloat(targetValue),
       targetDate,
     });
@@ -73,71 +63,34 @@ export function EditGoalDialog({ open, onOpenChange, goal, onSubmit }: EditGoalD
     onOpenChange(false);
   };
 
-  const progressPercentage = goal ? Math.min((goal.currentValue / goal.targetValue) * 100, 100) : 0;
-
   if (!goal) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            Edit Goal: {goal.exerciseName}
-            <Badge className={getCategoryColor(goal.category)} variant="secondary">
-              {goal.category}
-            </Badge>
-          </DialogTitle>
+          <DialogTitle>Edit Goal</DialogTitle>
           <DialogDescription>
-            Update your target value and deadline for this fitness goal.
+            Update your fitness goal details.
           </DialogDescription>
         </DialogHeader>
 
-        {/* Current Progress Display */}
-        <div className="bg-muted/50 rounded-lg p-4 space-y-3">
-          <h4 className="text-sm font-medium text-muted-foreground">Current Progress</h4>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Target className="h-4 w-4 text-muted-foreground" />
-              <span className="font-mono text-lg">
-                {goal.currentValue} / {goal.targetValue} {goal.unit}
-              </span>
-            </div>
-            <div className="text-right">
-              <div className="text-sm font-medium">{Math.round(progressPercentage)}% Complete</div>
-              <div className="text-xs text-muted-foreground">
-                {goal.currentValue >= goal.targetValue ? "Goal Achieved!" : "In Progress"}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Exercise Info (Read-only) */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Exercise Name */}
           <div className="space-y-2">
-            <Label className="text-sm text-muted-foreground">Exercise (Cannot be changed)</Label>
-            <div className="p-3 bg-muted/30 rounded-md">
-              <div className="font-medium">{goal.exerciseName}</div>
-              <div className="text-sm text-muted-foreground">Unit: {goal.unit}</div>
-            </div>
+            <Label htmlFor="exerciseName">Exercise name</Label>
+            <Input
+              id="exerciseName"
+              value={exerciseName}
+              onChange={(e) => setExerciseName(e.target.value)}
+              placeholder="Enter exercise name"
+              data-testid="input-exercise-name"
+            />
           </div>
 
-          {/* Current Value (Read-only) */}
+          {/* Target and Unit (same line) */}
           <div className="space-y-2">
-            <Label className="text-sm text-muted-foreground">Current Achievement (Auto-tracked)</Label>
-            <div className="p-3 bg-muted/30 rounded-md">
-              <div className="font-mono text-lg">{goal.currentValue} {goal.unit}</div>
-              <div className="text-sm text-muted-foreground">
-                Updated automatically when you log workouts
-              </div>
-            </div>
-          </div>
-
-          {/* Target Value (Editable) */}
-          <div className="space-y-2">
-            <Label htmlFor="targetValue" className="flex items-center gap-2">
-              <Target className="h-4 w-4" />
-              Target Value
-            </Label>
+            <Label htmlFor="targetValue">Target and Unit</Label>
             <div className="flex items-center gap-2">
               <Input
                 id="targetValue"
@@ -145,23 +98,17 @@ export function EditGoalDialog({ open, onOpenChange, goal, onSubmit }: EditGoalD
                 step="0.1"
                 value={targetValue}
                 onChange={(e) => setTargetValue(e.target.value)}
-                placeholder="Enter target value"
+                placeholder="Target value"
                 className="flex-1"
                 data-testid="input-target-value"
               />
               <span className="text-sm text-muted-foreground min-w-fit">{goal.unit}</span>
             </div>
-            <div className="text-xs text-muted-foreground">
-              Set your goal target. Make it challenging but achievable!
-            </div>
           </div>
 
-          {/* Target Date (Editable) */}
+          {/* Deadline */}
           <div className="space-y-2">
-            <Label className="flex items-center gap-2">
-              <CalendarLucide className="h-4 w-4" />
-              Target Date
-            </Label>
+            <Label>Deadline</Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -183,9 +130,6 @@ export function EditGoalDialog({ open, onOpenChange, goal, onSubmit }: EditGoalD
                 />
               </PopoverContent>
             </Popover>
-            <div className="text-xs text-muted-foreground">
-              Choose a realistic deadline to achieve your target
-            </div>
           </div>
 
           <DialogFooter className="gap-2">
@@ -199,7 +143,7 @@ export function EditGoalDialog({ open, onOpenChange, goal, onSubmit }: EditGoalD
             </Button>
             <Button
               type="submit"
-              disabled={!targetValue || !targetDate}
+              disabled={!exerciseName || !targetValue || !targetDate}
               data-testid="button-save-goal"
             >
               Save Changes
