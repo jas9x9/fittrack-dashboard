@@ -92,12 +92,12 @@ export default function Goals() {
     }
   };
 
-  const handleUpdateGoal = (goalId: string, updates: { exerciseName: string; targetValue: number; targetDate: Date }) => {
+  const handleUpdateGoal = (goalId: string, updates: { exerciseName: string; targetValue: number; unit: string; targetDate: Date }) => {
     console.log('Updating goal:', goalId, updates);
     
     toast({
       title: "Goal Updated",
-      description: `Successfully updated ${updates.exerciseName} target to ${updates.targetValue} by ${updates.targetDate.toLocaleDateString()}`,
+      description: `Successfully updated ${updates.exerciseName} target to ${updates.targetValue} ${updates.unit} by ${updates.targetDate.toLocaleDateString()}`,
     });
     
     // TODO: Implement actual goal update functionality with backend

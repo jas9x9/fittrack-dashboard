@@ -12,6 +12,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 
@@ -32,6 +39,7 @@ interface EditGoalDialogProps {
   onSubmit: (goalId: string, updates: {
     exerciseName: string;
     targetValue: number;
+    unit: string;
     targetDate: Date;
   }) => void;
 }
@@ -39,6 +47,7 @@ interface EditGoalDialogProps {
 export function EditGoalDialog({ open, onOpenChange, goal, onSubmit }: EditGoalDialogProps) {
   const [exerciseName, setExerciseName] = useState("");
   const [targetValue, setTargetValue] = useState("");
+  const [unit, setUnit] = useState("KGs");
   const [targetDate, setTargetDate] = useState<Date>();
 
   // Populate form when goal changes
@@ -46,17 +55,19 @@ export function EditGoalDialog({ open, onOpenChange, goal, onSubmit }: EditGoalD
     if (goal) {
       setExerciseName(goal.exerciseName);
       setTargetValue(goal.targetValue.toString());
+      setUnit("KGs"); // Default to KGs as requested
       setTargetDate(new Date(goal.targetDate));
     }
   }, [goal]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!goal || !exerciseName || !targetValue || !targetDate) return;
+    if (!goal || !exerciseName || !targetValue || !unit || !targetDate) return;
 
     onSubmit(goal.id, {
       exerciseName,
       targetValue: parseFloat(targetValue),
+      unit,
       targetDate,
     });
 
@@ -88,22 +99,32 @@ export function EditGoalDialog({ open, onOpenChange, goal, onSubmit }: EditGoalD
             />
           </div>
 
-          {/* Target and Unit (same line) */}
+          {/* Target */}
           <div className="space-y-2">
-            <Label htmlFor="targetValue">Target and Unit</Label>
-            <div className="flex items-center gap-2">
-              <Input
-                id="targetValue"
-                type="number"
-                step="0.1"
-                value={targetValue}
-                onChange={(e) => setTargetValue(e.target.value)}
-                placeholder="Target value"
-                className="flex-1"
-                data-testid="input-target-value"
-              />
-              <span className="text-sm text-muted-foreground min-w-fit">{goal.unit}</span>
-            </div>
+            <Label htmlFor="targetValue">Target</Label>
+            <Input
+              id="targetValue"
+              type="number"
+              value={targetValue}
+              onChange={(e) => setTargetValue(e.target.value)}
+              placeholder="Enter target value"
+              data-testid="input-target-value"
+            />
+          </div>
+
+          {/* Unit */}
+          <div className="space-y-2">
+            <Label htmlFor="unit">Unit</Label>
+            <Select value={unit} onValueChange={setUnit}>
+              <SelectTrigger data-testid="select-unit">
+                <SelectValue placeholder="Select unit" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="KGs">KGs</SelectItem>
+                <SelectItem value="Reps">Reps</SelectItem>
+                <SelectItem value="KMs">KMs</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Deadline */}
@@ -143,7 +164,7 @@ export function EditGoalDialog({ open, onOpenChange, goal, onSubmit }: EditGoalD
             </Button>
             <Button
               type="submit"
-              disabled={!exerciseName || !targetValue || !targetDate}
+              disabled={!exerciseName || !targetValue || !unit || !targetDate}
               data-testid="button-save-goal"
             >
               Save Changes
