@@ -84,7 +84,7 @@ export function AddGoalDialog({ open, onOpenChange, exercises, onSubmit }: AddGo
               <SelectContent>
                 {exercises.map((exercise) => (
                   <SelectItem key={exercise.id} value={exercise.id}>
-                    <span>{exercise.name}</span>
+                    <span className="text-foreground">{exercise.name}</span>
                   </SelectItem>
                 ))}
               </SelectContent>
