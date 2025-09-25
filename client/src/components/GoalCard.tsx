@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { ProgressRing } from "./ProgressRing";
+import { WorkoutChart } from "./WorkoutChart";
 import { Target, TrendingUp, Calendar, Edit, Plus } from "lucide-react";
 
 interface GoalCardProps {
@@ -16,6 +16,26 @@ interface GoalCardProps {
   onEdit?: (id: string) => void;
   onAddProgress?: (id: string) => void;
   className?: string;
+}
+
+// Generate mock chart data for demonstration
+function generateMockData(exerciseName: string, currentValue: number) {
+  const baseValue = Math.max(currentValue - 20, currentValue * 0.7);
+  const dataPoints = [];
+  
+  for (let i = 0; i < 6; i++) {
+    const date = new Date();
+    date.setDate(date.getDate() - (5 - i) * 3);
+    const variation = Math.random() * 10 - 5;
+    const value = Math.round(baseValue + (currentValue - baseValue) * (i / 5) + variation);
+    
+    dataPoints.push({
+      date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      value: Math.max(value, baseValue * 0.8)
+    });
+  }
+  
+  return dataPoints;
 }
 
 export function GoalCard({
@@ -68,30 +88,31 @@ export function GoalCard({
         </div>
       </CardHeader>
       <CardContent>
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
-              <Target className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm font-mono">
-                {currentValue} / {targetValue} {unit}
+        <div className="mb-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Target className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm font-mono">
+              {currentValue} / {targetValue} {unit}
+            </span>
+          </div>
+          <Progress value={progress} className="h-2 mb-2" />
+          <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
+            <div className="flex items-center gap-1">
+              <Calendar className="h-3 w-3" />
+              <span>
+                {daysRemaining > 0 ? `${daysRemaining} days left` : 
+                 daysRemaining === 0 ? 'Due today' : 
+                 `${Math.abs(daysRemaining)} days overdue`}
               </span>
             </div>
-            <Progress value={progress} className="h-2 mb-2" />
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <div className="flex items-center gap-1">
-                <Calendar className="h-3 w-3" />
-                <span>
-                  {daysRemaining > 0 ? `${daysRemaining} days left` : 
-                   daysRemaining === 0 ? 'Due today' : 
-                   `${Math.abs(daysRemaining)} days overdue`}
-                </span>
-              </div>
-              <span>{Math.round(progress)}% complete</span>
-            </div>
+            <span>{Math.round(progress)}% complete</span>
           </div>
-          <div className="ml-4">
-            <ProgressRing progress={progress} size={60} strokeWidth={4} />
-          </div>
+          <WorkoutChart 
+            data={generateMockData(exerciseName, currentValue)} 
+            title="Recent Progress"
+            unit={unit}
+            className="border-t pt-4"
+          />
         </div>
         
         {isCompleted && (
