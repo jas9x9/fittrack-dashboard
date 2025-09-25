@@ -202,6 +202,7 @@ export default function Goals() {
           if (!open) setSelectedGoalForEdit(null);
         }}
         goal={selectedGoalForEdit}
+        exercises={mockExercises}
         onSubmit={handleUpdateGoal}
       />
 

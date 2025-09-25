@@ -31,10 +31,18 @@ interface Goal {
   targetDate: string;
 }
 
+interface Exercise {
+  id: string;
+  name: string;
+  unit: string;
+  description?: string;
+}
+
 interface EditGoalDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   goal: Goal | null;
+  exercises: Exercise[];
   onSubmit: (goalId: string, updates: {
     exerciseName: string;
     targetValue: number;
@@ -43,28 +51,35 @@ interface EditGoalDialogProps {
   }) => void;
 }
 
-export function EditGoalDialog({ open, onOpenChange, goal, onSubmit }: EditGoalDialogProps) {
-  const [exerciseName, setExerciseName] = useState("");
+export function EditGoalDialog({ open, onOpenChange, goal, exercises, onSubmit }: EditGoalDialogProps) {
+  const [exerciseId, setExerciseId] = useState("");
   const [targetValue, setTargetValue] = useState("");
   const [unit, setUnit] = useState("KGs");
   const [targetDate, setTargetDate] = useState<Date>();
 
+  const selectedExercise = exercises.find(ex => ex.id === exerciseId);
+
   // Populate form when goal changes
   useEffect(() => {
     if (goal) {
-      setExerciseName(goal.exerciseName);
+      // Find the exercise ID based on the exercise name
+      const exercise = exercises.find(ex => ex.name === goal.exerciseName);
+      setExerciseId(exercise?.id || "");
       setTargetValue(goal.targetValue.toString());
       setUnit("KGs"); // Default to KGs as requested
       setTargetDate(new Date(goal.targetDate));
     }
-  }, [goal]);
+  }, [goal, exercises]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!goal || !exerciseName || !targetValue || !unit || !targetDate) return;
+    if (!goal || !exerciseId || !targetValue || !unit || !targetDate) return;
+
+    const selectedExercise = exercises.find(ex => ex.id === exerciseId);
+    if (!selectedExercise) return;
 
     onSubmit(goal.id, {
-      exerciseName,
+      exerciseName: selectedExercise.name,
       targetValue: parseFloat(targetValue),
       unit,
       targetDate,
@@ -86,16 +101,21 @@ export function EditGoalDialog({ open, onOpenChange, goal, onSubmit }: EditGoalD
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Exercise Name */}
+          {/* Exercise */}
           <div className="space-y-2">
-            <Label htmlFor="exerciseName">Exercise name</Label>
-            <Input
-              id="exerciseName"
-              value={exerciseName}
-              onChange={(e) => setExerciseName(e.target.value)}
-              placeholder="Enter exercise name"
-              data-testid="input-exercise-name"
-            />
+            <Label htmlFor="exercise">Exercise</Label>
+            <Select value={exerciseId} onValueChange={setExerciseId}>
+              <SelectTrigger data-testid="select-exercise">
+                <SelectValue placeholder="Select an exercise" />
+              </SelectTrigger>
+              <SelectContent>
+                {exercises.map((exercise) => (
+                  <SelectItem key={exercise.id} value={exercise.id} className="text-foreground">
+                    {exercise.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Target and Unit (same row) */}
@@ -167,7 +187,7 @@ export function EditGoalDialog({ open, onOpenChange, goal, onSubmit }: EditGoalD
             </Button>
             <Button
               type="submit"
-              disabled={!exerciseName || !targetValue || !unit || !targetDate}
+              disabled={!exerciseId || !targetValue || !unit || !targetDate}
               data-testid="button-save-goal"
             >
               Save Changes
