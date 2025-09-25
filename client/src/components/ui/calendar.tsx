@@ -21,14 +21,14 @@ function Calendar({
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
-        caption: "flex justify-center pt-1 relative items-center",
+        caption: "flex justify-start pt-1 relative items-center",
         caption_label: "text-sm font-medium text-foreground",
         nav: "space-x-1 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
           "h-7 w-7 bg-transparent p-0 opacity-70 hover:opacity-100 text-foreground border-border",
         ),
-        nav_button_previous: "absolute right-[60px]",
+        nav_button_previous: "absolute right-[-24px]",
         nav_button_next: "absolute right-[-32px]",
         table: "w-full border-collapse space-y-1 min-h-[240px]",
         head_row: "flex",
