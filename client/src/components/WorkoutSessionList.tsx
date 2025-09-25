@@ -1,5 +1,4 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, Trophy, TrendingUp, TrendingDown, Minus, Plus } from "lucide-react";
 
@@ -9,7 +8,6 @@ interface WorkoutSession {
   value: number;
   unit: string;
   date: string;
-  category: string;
   notes?: string;
   change?: number; // percentage change from previous session
 }
@@ -27,18 +25,6 @@ export function WorkoutSessionList({
   onAddSession,
   className = ""
 }: WorkoutSessionListProps) {
-  const getCategoryColor = (category: string) => {
-    switch (category.toLowerCase()) {
-      case "strength":
-        return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400";
-      case "cardio":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400";
-      case "flexibility":
-        return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400";
-      default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
-    }
-  };
 
   const getChangeIcon = (change?: number) => {
     if (!change) return <Minus className="h-3 w-3" />;
@@ -86,9 +72,6 @@ export function WorkoutSessionList({
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
                   <h4 className="font-medium">{session.exerciseName}</h4>
-                  <Badge className={getCategoryColor(session.category)} variant="secondary">
-                    {session.category}
-                  </Badge>
                 </div>
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <div className="flex items-center gap-1">

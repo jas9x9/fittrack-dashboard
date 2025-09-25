@@ -16,11 +16,11 @@ import { Plus, Search, Filter, Activity, Timer, Zap } from "lucide-react";
 
 // TODO: Remove mock data when implementing real backend
 const mockExercises = [
-  { id: '1', name: 'Bench Press', category: 'Strength', unit: 'lbs', description: 'Chest and tricep strength exercise' },
-  { id: '2', name: 'Squats', category: 'Strength', unit: 'lbs', description: 'Lower body compound movement' },
-  { id: '3', name: 'Running', category: 'Cardio', unit: 'miles', description: 'Cardiovascular endurance' },
-  { id: '4', name: 'Push-ups', category: 'Strength', unit: 'reps', description: 'Bodyweight upper body exercise' },
-  { id: '5', name: 'Deadlift', category: 'Strength', unit: 'lbs', description: 'Full body compound lift' },
+  { id: '1', name: 'Bench Press', unit: 'lbs', description: 'Chest and tricep strength exercise' },
+  { id: '2', name: 'Squats', unit: 'lbs', description: 'Lower body compound movement' },
+  { id: '3', name: 'Running', unit: 'miles', description: 'Cardiovascular endurance' },
+  { id: '4', name: 'Push-ups', unit: 'reps', description: 'Bodyweight upper body exercise' },
+  { id: '5', name: 'Deadlift', unit: 'lbs', description: 'Full body compound lift' },
 ];
 
 const mockSessions = [
@@ -30,7 +30,7 @@ const mockSessions = [
     value: 145,
     unit: 'lbs',
     date: '2024-01-15',
-    category: 'Strength',
+
     notes: 'Felt strong today',
     change: 3.6
   },
@@ -40,7 +40,7 @@ const mockSessions = [
     value: 4.2,
     unit: 'miles',
     date: '2024-01-14',
-    category: 'Cardio',
+
     change: -2.3
   },
   {
@@ -49,7 +49,7 @@ const mockSessions = [
     value: 45,
     unit: 'reps',
     date: '2024-01-13',
-    category: 'Strength',
+
     notes: 'Good form',
     change: 7.1
   },
@@ -59,7 +59,7 @@ const mockSessions = [
     value: 85,
     unit: 'lbs',
     date: '2024-01-12',
-    category: 'Strength',
+
     notes: 'New personal record',
     change: 12.5
   },
@@ -69,7 +69,7 @@ const mockSessions = [
     value: 3.8,
     unit: 'miles',
     date: '2024-01-11',
-    category: 'Cardio',
+
     change: 5.2
   },
   {
@@ -78,7 +78,7 @@ const mockSessions = [
     value: 140,
     unit: 'lbs',
     date: '2024-01-10',
-    category: 'Strength',
+
     change: 0
   }
 ];
@@ -95,7 +95,6 @@ const mockChartData = [
 export default function Workouts() {
   const [showAddWorkout, setShowAddWorkout] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterCategory, setFilterCategory] = useState("all");
   const [selectedExercise, setSelectedExercise] = useState("all");
 
   const handleAddWorkout = (workout: any) => {
@@ -105,12 +104,11 @@ export default function Workouts() {
 
   const filteredSessions = mockSessions.filter(session => {
     const matchesSearch = session.exerciseName.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = filterCategory === "all" || session.category.toLowerCase() === filterCategory.toLowerCase();
+    const matchesCategory = true;
     const matchesExercise = selectedExercise === "all" || session.exerciseName === selectedExercise;
     return matchesSearch && matchesCategory && matchesExercise;
   });
 
-  const categories = Array.from(new Set(mockSessions.map(session => session.category)));
   const exercises = Array.from(new Set(mockSessions.map(session => session.exerciseName)));
 
   const totalSessions = mockSessions.length;
@@ -183,22 +181,6 @@ export default function Workouts() {
           />
         </div>
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4 text-muted-foreground" />
-            <Select value={filterCategory} onValueChange={setFilterCategory}>
-              <SelectTrigger className="w-[140px]" data-testid="filter-category">
-                <SelectValue placeholder="Category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All categories</SelectItem>
-                {categories.map((category) => (
-                  <SelectItem key={category} value={category.toLowerCase()}>
-                    {category}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
           <Select value={selectedExercise} onValueChange={setSelectedExercise}>
             <SelectTrigger className="w-[140px]" data-testid="filter-exercise">
               <SelectValue placeholder="Exercise" />
@@ -231,7 +213,7 @@ export default function Workouts() {
         onAddSession={() => setShowAddWorkout(true)}
       />
 
-      {filteredSessions.length === 0 && (searchTerm || filterCategory !== "all" || selectedExercise !== "all") && (
+      {filteredSessions.length === 0 && (searchTerm || selectedExercise !== "all") && (
         <div className="text-center py-12">
           <div className="text-muted-foreground">
             <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />

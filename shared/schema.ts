@@ -12,7 +12,6 @@ export const users = pgTable("users", {
 export const exercises = pgTable("exercises", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
-  category: text("category").notNull(), // strength, cardio, flexibility
   unit: text("unit").notNull(), // reps, minutes, kg, miles, etc
   description: text("description"),
 });

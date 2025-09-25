@@ -29,7 +29,6 @@ interface Goal {
   targetValue: number;
   unit: string;
   targetDate: string;
-  category: string;
 }
 
 interface EditGoalDialogProps {

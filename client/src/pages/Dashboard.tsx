@@ -16,11 +16,11 @@ import {
 
 // TODO: Remove mock data when implementing real backend
 const mockExercises = [
-  { id: '1', name: 'Bench Press', category: 'Strength', unit: 'lbs', description: 'Chest and tricep strength exercise' },
-  { id: '2', name: 'Squats', category: 'Strength', unit: 'lbs', description: 'Lower body compound movement' },
-  { id: '3', name: 'Running', category: 'Cardio', unit: 'miles', description: 'Cardiovascular endurance' },
-  { id: '4', name: 'Push-ups', category: 'Strength', unit: 'reps', description: 'Bodyweight upper body exercise' },
-  { id: '5', name: 'Deadlift', category: 'Strength', unit: 'lbs', description: 'Full body compound lift' },
+  { id: '1', name: 'Bench Press', unit: 'lbs', description: 'Chest and tricep strength exercise' },
+  { id: '2', name: 'Squats', unit: 'lbs', description: 'Lower body compound movement' },
+  { id: '3', name: 'Running', unit: 'miles', description: 'Cardiovascular endurance' },
+  { id: '4', name: 'Push-ups', unit: 'reps', description: 'Bodyweight upper body exercise' },
+  { id: '5', name: 'Deadlift', unit: 'lbs', description: 'Full body compound lift' },
 ];
 
 const mockGoals = [
@@ -31,7 +31,7 @@ const mockGoals = [
     targetValue: 150,
     unit: 'lbs',
     targetDate: '2024-12-31',
-    category: 'Strength'
+
   },
   {
     id: '2',
@@ -40,7 +40,7 @@ const mockGoals = [
     targetValue: 5.0,
     unit: 'miles',
     targetDate: '2024-11-15',
-    category: 'Cardio'
+
   },
   {
     id: '3',
@@ -49,7 +49,7 @@ const mockGoals = [
     targetValue: 50,
     unit: 'reps',
     targetDate: '2024-10-01',
-    category: 'Strength'
+
   }
 ];
 
@@ -60,7 +60,6 @@ const mockSessions = [
     value: 145,
     unit: 'lbs',
     date: '2024-01-15',
-    category: 'Strength',
     notes: 'Felt strong today',
     change: 3.6
   },
@@ -70,7 +69,6 @@ const mockSessions = [
     value: 4.2,
     unit: 'miles',
     date: '2024-01-14',
-    category: 'Cardio',
     change: -2.3
   },
   {
@@ -79,7 +77,6 @@ const mockSessions = [
     value: 45,
     unit: 'reps',
     date: '2024-01-13',
-    category: 'Strength',
     notes: 'Good form',
     change: 7.1
   },

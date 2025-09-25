@@ -17,12 +17,12 @@ import { Plus } from "lucide-react";
 
 // TODO: Remove mock data when implementing real backend
 const mockExercises = [
-  { id: '1', name: 'Bench Press', category: 'Strength', unit: 'lbs', description: 'Chest and tricep strength exercise' },
-  { id: '2', name: 'Squats', category: 'Strength', unit: 'lbs', description: 'Lower body compound movement' },
-  { id: '3', name: 'Running', category: 'Cardio', unit: 'miles', description: 'Cardiovascular endurance' },
-  { id: '4', name: 'Push-ups', category: 'Strength', unit: 'reps', description: 'Bodyweight upper body exercise' },
-  { id: '5', name: 'Deadlift', category: 'Strength', unit: 'lbs', description: 'Full body compound lift' },
-  { id: '6', name: 'Yoga', category: 'Flexibility', unit: 'minutes', description: 'Flexibility and mindfulness' },
+  { id: '1', name: 'Bench Press', unit: 'lbs', description: 'Chest and tricep strength exercise' },
+  { id: '2', name: 'Squats', unit: 'lbs', description: 'Lower body compound movement' },
+  { id: '3', name: 'Running', unit: 'miles', description: 'Cardiovascular endurance' },
+  { id: '4', name: 'Push-ups', unit: 'reps', description: 'Bodyweight upper body exercise' },
+  { id: '5', name: 'Deadlift', unit: 'lbs', description: 'Full body compound lift' },
+  { id: '6', name: 'Yoga', unit: 'minutes', description: 'Flexibility and mindfulness' },
 ];
 
 const mockGoals = [
@@ -32,8 +32,7 @@ const mockGoals = [
     currentValue: 140,
     targetValue: 150,
     unit: 'lbs',
-    targetDate: '2024-12-31',
-    category: 'Strength'
+    targetDate: '2024-12-31'
   },
   {
     id: '2',
@@ -41,8 +40,7 @@ const mockGoals = [
     currentValue: 4.2,
     targetValue: 5.0,
     unit: 'miles',
-    targetDate: '2024-11-15',
-    category: 'Cardio'
+    targetDate: '2024-11-15'
   },
   {
     id: '3',
@@ -50,8 +48,7 @@ const mockGoals = [
     currentValue: 50,
     targetValue: 50,
     unit: 'reps',
-    targetDate: '2024-10-01',
-    category: 'Strength'
+    targetDate: '2024-10-01'
   },
   {
     id: '4',
@@ -59,8 +56,7 @@ const mockGoals = [
     currentValue: 65,
     targetValue: 100,
     unit: 'lbs',
-    targetDate: '2024-12-15',
-    category: 'Strength'
+    targetDate: '2024-12-15'
   },
   {
     id: '5',
@@ -68,8 +64,7 @@ const mockGoals = [
     currentValue: 20,
     targetValue: 30,
     unit: 'minutes',
-    targetDate: '2024-11-30',
-    category: 'Flexibility'
+    targetDate: '2024-11-30'
   }
 ];
 
@@ -125,7 +120,7 @@ export default function Goals() {
     <div className="flex-1 space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Set targets and track your fitness journey</h1>
+          <h1 className="text-2xl font-regular">Set targets and track your fitness journey</h1>
         </div>
         <Button
           onClick={() => setShowAddGoal(true)}

@@ -26,7 +26,6 @@ import { format } from "date-fns";
 interface Exercise {
   id: string;
   name: string;
-  category: string;
   unit: string;
   description?: string;
 }
@@ -98,12 +97,7 @@ export function AddWorkoutDialog({
               <SelectContent>
                 {exercises.map((exercise) => (
                   <SelectItem key={exercise.id} value={exercise.id}>
-                    <div className="flex items-center justify-between w-full">
-                      <span>{exercise.name}</span>
-                      <span className="text-xs text-muted-foreground ml-2">
-                        ({exercise.category})
-                      </span>
-                    </div>
+                    <span>{exercise.name}</span>
                   </SelectItem>
                 ))}
               </SelectContent>
