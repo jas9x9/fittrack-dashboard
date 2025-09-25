@@ -99,32 +99,30 @@ export function EditGoalDialog({ open, onOpenChange, goal, onSubmit }: EditGoalD
             />
           </div>
 
-          {/* Target */}
+          {/* Target and Unit (same row) */}
           <div className="space-y-2">
             <Label htmlFor="targetValue">Target</Label>
-            <Input
-              id="targetValue"
-              type="number"
-              value={targetValue}
-              onChange={(e) => setTargetValue(e.target.value)}
-              placeholder="Enter target value"
-              data-testid="input-target-value"
-            />
-          </div>
-
-          {/* Unit */}
-          <div className="space-y-2">
-            <Label htmlFor="unit">Unit</Label>
-            <Select value={unit} onValueChange={setUnit}>
-              <SelectTrigger data-testid="select-unit">
-                <SelectValue placeholder="Select unit" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="KGs">KGs</SelectItem>
-                <SelectItem value="Reps">Reps</SelectItem>
-                <SelectItem value="KMs">KMs</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-2">
+              <Input
+                id="targetValue"
+                type="number"
+                value={targetValue}
+                onChange={(e) => setTargetValue(e.target.value)}
+                placeholder="Enter target value"
+                className="flex-1"
+                data-testid="input-target-value"
+              />
+              <Select value={unit} onValueChange={setUnit}>
+                <SelectTrigger className="w-24" data-testid="select-unit">
+                  <SelectValue placeholder="Unit" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="KGs">KGs</SelectItem>
+                  <SelectItem value="Reps">Reps</SelectItem>
+                  <SelectItem value="KMs">KMs</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {/* Deadline */}
