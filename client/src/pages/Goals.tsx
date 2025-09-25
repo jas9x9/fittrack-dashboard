@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 import { Plus, Search, Filter } from "lucide-react";
 
 // TODO: Remove mock data when implementing real backend
@@ -78,8 +79,17 @@ export default function Goals() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
 
+  const { toast } = useToast();
+
   const handleEditGoal = (id: string) => {
+    const goal = mockGoals.find(g => g.id === id);
     console.log('Edit goal:', id);
+    
+    toast({
+      title: "Edit Goal",
+      description: `Edit functionality for ${goal?.exerciseName || 'goal'} is coming soon!`,
+    });
+    
     // TODO: Implement edit goal functionality
   };
 
