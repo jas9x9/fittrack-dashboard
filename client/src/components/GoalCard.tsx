@@ -88,7 +88,7 @@ export function GoalCard({
         </div>
       </CardHeader>
       <CardContent>
-        <div className="mb-4">
+        <div className="mb-2">
           <div className="flex items-center gap-2 mb-2">
             <Target className="h-4 w-4 text-muted-foreground" />
             <span className="text-sm font-mono">
@@ -96,7 +96,7 @@ export function GoalCard({
             </span>
           </div>
           <Progress value={progress} className="h-2 mb-2" />
-          <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
+          <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
             <div className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />
               <span>
@@ -111,12 +111,12 @@ export function GoalCard({
             data={generateMockData(exerciseName, currentValue)} 
             title="Recent Progress"
             unit={unit}
-            className="border-t pt-4"
+            className="border-t pt-2"
           />
         </div>
         
         {isCompleted && (
-          <div className="bg-primary/10 border border-primary/20 rounded-md p-3 mb-3">
+          <div className="bg-primary/10 border border-primary/20 rounded-md p-2 mb-2">
             <div className="flex items-center gap-2 text-sm font-medium text-primary">
               <TrendingUp className="h-4 w-4" />
               Goal Achieved! 🎉

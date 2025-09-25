@@ -23,7 +23,7 @@ interface WorkoutChartProps {
 
 export function WorkoutChart({ data, title, unit, className = "" }: WorkoutChartProps) {
   return (
-    <div className={`p-6 ${className}`}>
+    <div className={`p-3 ${className}`}>
       <h3 className="text-lg font-semibold mb-4">{title}</h3>
       <ResponsiveContainer width="100%" height={210}>
         <AreaChart data={data}>
