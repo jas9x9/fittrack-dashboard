@@ -108,7 +108,7 @@ export function EditGoalDialog({ open, onOpenChange, goal, exercises, onSubmit }
               <SelectTrigger data-testid="select-exercise">
                 <SelectValue placeholder="Select an exercise" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-background">
                 {exercises.map((exercise) => (
                   <SelectItem key={exercise.id} value={exercise.id} className="text-foreground">
                     {exercise.name}
