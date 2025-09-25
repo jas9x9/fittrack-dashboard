@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Search, Filter } from "lucide-react";
+import { Plus } from "lucide-react";
 
 // TODO: Remove mock data when implementing real backend
 const mockExercises = [
@@ -79,8 +79,6 @@ export default function Goals() {
   const [showEditGoal, setShowEditGoal] = useState(false);
   const [selectedGoalForEdit, setSelectedGoalForEdit] = useState<typeof mockGoals[0] | null>(null);
   const [selectedExerciseId, setSelectedExerciseId] = useState<string>();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterCategory, setFilterCategory] = useState("all");
 
   const { toast } = useToast();
 
@@ -122,13 +120,6 @@ export default function Goals() {
     // TODO: Implement add workout functionality
   };
 
-  const filteredGoals = mockGoals.filter(goal => {
-    const matchesSearch = goal.exerciseName.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = filterCategory === "all" || goal.category.toLowerCase() === filterCategory.toLowerCase();
-    return matchesSearch && matchesCategory;
-  });
-
-  const categories = Array.from(new Set(mockGoals.map(goal => goal.category)));
 
   return (
     <div className="flex-1 space-y-6 p-6">
@@ -148,52 +139,21 @@ export default function Goals() {
         </Button>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-          <Input
-            placeholder="Search goals..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-            data-testid="search-goals"
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-muted-foreground" />
-          <Select value={filterCategory} onValueChange={setFilterCategory}>
-            <SelectTrigger className="w-[180px]" data-testid="filter-category">
-              <SelectValue placeholder="All categories" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All categories</SelectItem>
-              {categories.map((category) => (
-                <SelectItem key={category} value={category.toLowerCase()}>
-                  {category}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
 
       {/* Goals Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredGoals.length === 0 ? (
+        {mockGoals.length === 0 ? (
           <div className="col-span-full text-center py-12">
             <div className="text-muted-foreground">
               <Plus className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p className="text-lg mb-2">No goals found</p>
               <p className="text-sm">
-                {searchTerm || filterCategory !== "all" 
-                  ? "Try adjusting your search or filters" 
-                  : "Start by creating your first fitness goal"}
+                Start by creating your first fitness goal
               </p>
             </div>
           </div>
         ) : (
-          filteredGoals.map((goal) => (
+          mockGoals.map((goal) => (
             <GoalCard
               key={goal.id}
               {...goal}
@@ -205,19 +165,19 @@ export default function Goals() {
       </div>
 
       {/* Goal Statistics */}
-      {filteredGoals.length > 0 && (
+      {mockGoals.length > 0 && (
         <div className="bg-muted/50 rounded-lg p-6">
           <h3 className="text-lg font-semibold mb-4">Goal Overview</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
             <div>
               <div className="text-2xl font-bold text-primary">
-                {filteredGoals.filter(g => (g.currentValue / g.targetValue) >= 1).length}
+                {mockGoals.filter(g => (g.currentValue / g.targetValue) >= 1).length}
               </div>
               <div className="text-sm text-muted-foreground">Completed</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-blue-500">
-                {filteredGoals.filter(g => {
+                {mockGoals.filter(g => {
                   const progress = g.currentValue / g.targetValue;
                   return progress >= 0.5 && progress < 1;
                 }).length}
@@ -226,7 +186,7 @@ export default function Goals() {
             </div>
             <div>
               <div className="text-2xl font-bold text-yellow-500">
-                {filteredGoals.filter(g => (g.currentValue / g.targetValue) < 0.5).length}
+                {mockGoals.filter(g => (g.currentValue / g.targetValue) < 0.5).length}
               </div>
               <div className="text-sm text-muted-foreground">Getting Started</div>
             </div>
