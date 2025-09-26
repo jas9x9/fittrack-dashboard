@@ -45,6 +45,7 @@ interface EditGoalDialogProps {
   exercises: Exercise[];
   onSubmit: (goalId: string, updates: {
     exerciseName: string;
+    currentValue: number;
     targetValue: number;
     unit: string;
     targetDate: Date;
@@ -53,9 +54,12 @@ interface EditGoalDialogProps {
 
 export function EditGoalDialog({ open, onOpenChange, goal, exercises, onSubmit }: EditGoalDialogProps) {
   const [exerciseId, setExerciseId] = useState("");
+  const [currentValue, setCurrentValue] = useState("");
   const [targetValue, setTargetValue] = useState("");
   const [unit, setUnit] = useState("KGs");
   const [targetDate, setTargetDate] = useState<Date>();
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   const selectedExercise = exercises.find(ex => ex.id === exerciseId);
 
@@ -65,21 +69,43 @@ export function EditGoalDialog({ open, onOpenChange, goal, exercises, onSubmit }
       // Find the exercise ID based on the exercise name
       const exercise = exercises.find(ex => ex.name === goal.exerciseName);
       setExerciseId(exercise?.id || "");
+      setCurrentValue(goal.currentValue.toString());
       setTargetValue(goal.targetValue.toString());
       setUnit("KGs"); // Default to KGs as requested
       setTargetDate(new Date(goal.targetDate));
+      setErrors({});
+      setCalendarOpen(false);
     }
   }, [goal, exercises]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!goal || !exerciseId || !targetValue || !unit || !targetDate) return;
+
+    // Validate form
+    const newErrors: Record<string, string> = {};
+
+    if (!exerciseId) newErrors.exerciseId = "Exercise is required";
+    if (!currentValue) newErrors.currentValue = "Current value is required";
+    if (!targetValue) newErrors.targetValue = "Target value is required";
+    if (!targetDate) newErrors.targetDate = "Target date is required";
+
+    if (currentValue && targetValue && parseFloat(currentValue) >= parseFloat(targetValue)) {
+      newErrors.targetValue = "Target value must be greater than current value";
+    }
+
+    setErrors(newErrors);
+
+    // If there are errors, don't submit
+    if (Object.keys(newErrors).length > 0) return;
+
+    if (!goal) return;
 
     const selectedExercise = exercises.find(ex => ex.id === exerciseId);
     if (!selectedExercise) return;
 
     onSubmit(goal.id, {
       exerciseName: selectedExercise.name,
+      currentValue: parseFloat(currentValue),
       targetValue: parseFloat(targetValue),
       unit,
       targetDate,
@@ -103,9 +129,12 @@ export function EditGoalDialog({ open, onOpenChange, goal, exercises, onSubmit }
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Exercise */}
           <div className="space-y-2">
-            <Label htmlFor="exercise">Exercise</Label>
-            <Select value={exerciseId} onValueChange={setExerciseId}>
-              <SelectTrigger data-testid="select-exercise">
+            <Label htmlFor="exercise">Exercise <span className="text-red-500">*</span></Label>
+            <Select value={exerciseId} onValueChange={(value) => {
+              setExerciseId(value);
+              if (errors.exerciseId) setErrors(prev => ({ ...prev, exerciseId: "" }));
+            }}>
+              <SelectTrigger data-testid="select-exercise" className={errors.exerciseId ? "border-red-500" : ""}>
                 <SelectValue placeholder="Select an exercise" />
               </SelectTrigger>
               <SelectContent className="bg-background">
@@ -116,19 +145,63 @@ export function EditGoalDialog({ open, onOpenChange, goal, exercises, onSubmit }
                 ))}
               </SelectContent>
             </Select>
+            {errors.exerciseId && (
+              <p className="text-sm text-red-500">{errors.exerciseId}</p>
+            )}
+          </div>
+
+          {/* Current and Unit (same row) */}
+          <div className="space-y-2">
+            <Label htmlFor="currentValue">Current <span className="text-red-500">*</span></Label>
+            <div className="flex items-center gap-2">
+              <Input
+                id="currentValue"
+                type="number"
+                value={currentValue}
+                onChange={(e) => {
+                  setCurrentValue(e.target.value);
+                  if (errors.currentValue) setErrors(prev => ({ ...prev, currentValue: "" }));
+                }}
+                placeholder="Enter current value"
+                className={`flex-1 ${errors.currentValue ? "border-red-500" : ""}`}
+                data-testid="input-current-value"
+              />
+              <Select value={unit} onValueChange={setUnit}>
+                <SelectTrigger className="w-24" data-testid="select-current-unit">
+                  <SelectValue placeholder="Unit" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="KGs">
+                    <span className="text-foreground">KGs</span>
+                  </SelectItem>
+                  <SelectItem value="Reps">
+                    <span className="text-foreground">Reps</span>
+                  </SelectItem>
+                  <SelectItem value="KMs">
+                    <span className="text-foreground">KMs</span>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {errors.currentValue && (
+              <p className="text-sm text-red-500">{errors.currentValue}</p>
+            )}
           </div>
 
           {/* Target and Unit (same row) */}
           <div className="space-y-2">
-            <Label htmlFor="targetValue">Target</Label>
+            <Label htmlFor="targetValue">Target <span className="text-red-500">*</span></Label>
             <div className="flex items-center gap-2">
               <Input
                 id="targetValue"
                 type="number"
                 value={targetValue}
-                onChange={(e) => setTargetValue(e.target.value)}
+                onChange={(e) => {
+                  setTargetValue(e.target.value);
+                  if (errors.targetValue) setErrors(prev => ({ ...prev, targetValue: "" }));
+                }}
                 placeholder="Enter target value"
-                className="flex-1"
+                className={`flex-1 ${errors.targetValue ? "border-red-500" : ""}`}
                 data-testid="input-target-value"
               />
               <Select value={unit} onValueChange={setUnit}>
@@ -148,32 +221,42 @@ export function EditGoalDialog({ open, onOpenChange, goal, exercises, onSubmit }
                 </SelectContent>
               </Select>
             </div>
+            {errors.targetValue && (
+              <p className="text-sm text-red-500">{errors.targetValue}</p>
+            )}
           </div>
 
-          {/* Deadline */}
+          {/* Target Date */}
           <div className="space-y-2">
-            <Label>Deadline</Label>
-            <Popover>
+            <Label>Target Date <span className="text-red-500">*</span></Label>
+            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full justify-start text-left font-normal"
+                  className={`w-full justify-start text-left font-normal ${errors.targetDate ? "border-red-500" : ""}`}
                   data-testid="button-target-date"
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {targetDate ? format(targetDate, "PPP") : "Pick a date"}
+                  {targetDate ? format(targetDate, "PPP") : "Pick a target date"}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
                   selected={targetDate}
-                  onSelect={setTargetDate}
+                  onSelect={(date) => {
+                    setTargetDate(date);
+                    if (errors.targetDate) setErrors(prev => ({ ...prev, targetDate: "" }));
+                    setCalendarOpen(false); // Close the calendar after selection
+                  }}
                   disabled={(date) => date < new Date()}
                   initialFocus
                 />
               </PopoverContent>
             </Popover>
+            {errors.targetDate && (
+              <p className="text-sm text-red-500">{errors.targetDate}</p>
+            )}
           </div>
 
           <DialogFooter className="gap-2">
@@ -187,7 +270,6 @@ export function EditGoalDialog({ open, onOpenChange, goal, exercises, onSubmit }
             </Button>
             <Button
               type="submit"
-              disabled={!exerciseId || !targetValue || !unit || !targetDate}
               data-testid="button-save-goal"
             >
               Save Changes

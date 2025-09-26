@@ -86,14 +86,14 @@ export default function Goals() {
     }
   };
 
-  const handleUpdateGoal = (goalId: string, updates: { exerciseName: string; targetValue: number; unit: string; targetDate: Date }) => {
+  const handleUpdateGoal = (goalId: string, updates: { exerciseName: string; currentValue: number; targetValue: number; unit: string; targetDate: Date }) => {
     console.log('Updating goal:', goalId, updates);
-    
+
     toast({
       title: "Goal Updated",
-      description: `Successfully updated ${updates.exerciseName} target to ${updates.targetValue} ${updates.unit} by ${updates.targetDate.toLocaleDateString()}`,
+      description: `Successfully updated ${updates.exerciseName} from ${updates.currentValue} to ${updates.targetValue} ${updates.unit} by ${updates.targetDate.toLocaleDateString()}`,
     });
-    
+
     // TODO: Implement actual goal update functionality with backend
   };
 
@@ -106,7 +106,7 @@ export default function Goals() {
     }
   };
 
-  const handleAddGoal = (goal: any) => {
+  const handleAddGoal = (goal: { exerciseId: string; currentValue: number; targetValue: number; unit: string; targetDate: Date }) => {
     console.log('New goal created:', goal);
     // TODO: Implement add goal functionality
   };

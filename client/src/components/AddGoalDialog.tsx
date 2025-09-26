@@ -36,6 +36,7 @@ interface AddGoalDialogProps {
   exercises: Exercise[];
   onSubmit: (goal: {
     exerciseId: string;
+    currentValue: number;
     targetValue: number;
     unit: string;
     targetDate: Date;
@@ -44,18 +45,38 @@ interface AddGoalDialogProps {
 
 export function AddGoalDialog({ open, onOpenChange, exercises, onSubmit }: AddGoalDialogProps) {
   const [exerciseId, setExerciseId] = useState("");
+  const [currentValue, setCurrentValue] = useState("");
   const [targetValue, setTargetValue] = useState("");
   const [unit, setUnit] = useState("KGs");
   const [targetDate, setTargetDate] = useState<Date>();
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   const selectedExercise = exercises.find(ex => ex.id === exerciseId);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!exerciseId || !targetValue || !unit || !targetDate) return;
+
+    // Validate form
+    const newErrors: Record<string, string> = {};
+
+    if (!exerciseId) newErrors.exerciseId = "Exercise is required";
+    if (!currentValue) newErrors.currentValue = "Current value is required";
+    if (!targetValue) newErrors.targetValue = "Target value is required";
+    if (!targetDate) newErrors.targetDate = "Target date is required";
+
+    if (currentValue && targetValue && parseFloat(currentValue) >= parseFloat(targetValue)) {
+      newErrors.targetValue = "Target value must be greater than current value";
+    }
+
+    setErrors(newErrors);
+
+    // If there are errors, don't submit
+    if (Object.keys(newErrors).length > 0) return;
 
     onSubmit({
       exerciseId,
+      currentValue: parseFloat(currentValue),
       targetValue: parseFloat(targetValue),
       unit,
       targetDate,
@@ -63,9 +84,12 @@ export function AddGoalDialog({ open, onOpenChange, exercises, onSubmit }: AddGo
 
     // Reset form
     setExerciseId("");
+    setCurrentValue("");
     setTargetValue("");
     setUnit("KGs");
     setTargetDate(undefined);
+    setErrors({});
+    setCalendarOpen(false);
     onOpenChange(false);
   };
 
@@ -80,9 +104,12 @@ export function AddGoalDialog({ open, onOpenChange, exercises, onSubmit }: AddGo
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="exercise">Exercise</Label>
-            <Select value={exerciseId} onValueChange={setExerciseId}>
-              <SelectTrigger data-testid="select-exercise">
+            <Label htmlFor="exercise">Exercise <span className="text-red-500">*</span></Label>
+            <Select value={exerciseId} onValueChange={(value) => {
+              setExerciseId(value);
+              if (errors.exerciseId) setErrors(prev => ({ ...prev, exerciseId: "" }));
+            }}>
+              <SelectTrigger data-testid="select-exercise" className={errors.exerciseId ? "border-red-500" : ""}>
                 <SelectValue placeholder="Select an exercise" />
               </SelectTrigger>
               <SelectContent className="bg-background">
@@ -93,19 +120,63 @@ export function AddGoalDialog({ open, onOpenChange, exercises, onSubmit }: AddGo
                 ))}
               </SelectContent>
             </Select>
+            {errors.exerciseId && (
+              <p className="text-sm text-red-500">{errors.exerciseId}</p>
+            )}
+          </div>
+
+          {/* Current and Unit (same row) */}
+          <div className="space-y-2">
+            <Label htmlFor="currentValue">Current <span className="text-red-500">*</span></Label>
+            <div className="flex items-center gap-2">
+              <Input
+                id="currentValue"
+                type="number"
+                value={currentValue}
+                onChange={(e) => {
+                  setCurrentValue(e.target.value);
+                  if (errors.currentValue) setErrors(prev => ({ ...prev, currentValue: "" }));
+                }}
+                placeholder="Enter current value"
+                className={`flex-1 ${errors.currentValue ? "border-red-500" : ""}`}
+                data-testid="input-current-value"
+              />
+              <Select value={unit} onValueChange={setUnit}>
+                <SelectTrigger className="w-24" data-testid="select-current-unit">
+                  <SelectValue placeholder="Unit" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="KGs">
+                    <span className="text-foreground">KGs</span>
+                  </SelectItem>
+                  <SelectItem value="Reps">
+                    <span className="text-foreground">Reps</span>
+                  </SelectItem>
+                  <SelectItem value="KMs">
+                    <span className="text-foreground">KMs</span>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {errors.currentValue && (
+              <p className="text-sm text-red-500">{errors.currentValue}</p>
+            )}
           </div>
 
           {/* Target and Unit (same row) */}
           <div className="space-y-2">
-            <Label htmlFor="targetValue">Target</Label>
+            <Label htmlFor="targetValue">Target <span className="text-red-500">*</span></Label>
             <div className="flex items-center gap-2">
               <Input
                 id="targetValue"
                 type="number"
                 value={targetValue}
-                onChange={(e) => setTargetValue(e.target.value)}
+                onChange={(e) => {
+                  setTargetValue(e.target.value);
+                  if (errors.targetValue) setErrors(prev => ({ ...prev, targetValue: "" }));
+                }}
                 placeholder="Enter target value"
-                className="flex-1"
+                className={`flex-1 ${errors.targetValue ? "border-red-500" : ""}`}
                 data-testid="input-target-value"
               />
               <Select value={unit} onValueChange={setUnit}>
@@ -125,20 +196,18 @@ export function AddGoalDialog({ open, onOpenChange, exercises, onSubmit }: AddGo
                 </SelectContent>
               </Select>
             </div>
-            {selectedExercise?.description && (
-              <p className="text-xs text-muted-foreground">
-                {selectedExercise.description}
-              </p>
+            {errors.targetValue && (
+              <p className="text-sm text-red-500">{errors.targetValue}</p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label>Target Date</Label>
-            <Popover>
+            <Label>Target Date <span className="text-red-500">*</span></Label>
+            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full justify-start text-left font-normal"
+                  className={`w-full justify-start text-left font-normal ${errors.targetDate ? "border-red-500" : ""}`}
                   data-testid="button-target-date"
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
@@ -149,12 +218,19 @@ export function AddGoalDialog({ open, onOpenChange, exercises, onSubmit }: AddGo
                 <Calendar
                   mode="single"
                   selected={targetDate}
-                  onSelect={setTargetDate}
+                  onSelect={(date) => {
+                    setTargetDate(date);
+                    if (errors.targetDate) setErrors(prev => ({ ...prev, targetDate: "" }));
+                    setCalendarOpen(false); // Close the calendar after selection
+                  }}
                   disabled={(date) => date < new Date()}
                   initialFocus
                 />
               </PopoverContent>
             </Popover>
+            {errors.targetDate && (
+              <p className="text-sm text-red-500">{errors.targetDate}</p>
+            )}
           </div>
 
           <DialogFooter>
