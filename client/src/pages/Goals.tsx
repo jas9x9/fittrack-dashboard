@@ -157,35 +157,6 @@ export default function Goals() {
         )}
       </div>
 
-      {/* Goal Statistics */}
-      {mockGoals.length > 0 && (
-        <div className="bg-muted/50 rounded-lg p-6">
-          <h3 className="text-lg font-semibold mb-4">Goal Overview</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-            <div>
-              <div className="text-2xl font-bold text-primary">
-                {mockGoals.filter(g => (g.currentValue / g.targetValue) >= 1).length}
-              </div>
-              <div className="text-sm text-muted-foreground">Completed</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-blue-500">
-                {mockGoals.filter(g => {
-                  const progress = g.currentValue / g.targetValue;
-                  return progress >= 0.5 && progress < 1;
-                }).length}
-              </div>
-              <div className="text-sm text-muted-foreground">On Track</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-yellow-500">
-                {mockGoals.filter(g => (g.currentValue / g.targetValue) < 0.5).length}
-              </div>
-              <div className="text-sm text-muted-foreground">Getting Started</div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Dialogs */}
       <AddGoalDialog

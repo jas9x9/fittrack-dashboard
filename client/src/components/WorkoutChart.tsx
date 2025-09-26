@@ -23,10 +23,12 @@ interface WorkoutChartProps {
 
 export function WorkoutChart({ data, title, unit, className = "" }: WorkoutChartProps) {
   return (
-    <div className={`p-3 ${className}`}>
-      <h3 className="text-lg font-semibold mb-4">{title}</h3>
+    <div className={`px-3 pb-3 pt-4 ${className}`}>
       <ResponsiveContainer width="100%" height={210}>
-        <AreaChart data={data}>
+        <AreaChart
+          data={data}
+          margin={{ top: 5, right: 0, left: -30, bottom: 5 }}
+        >
           <defs>
             <linearGradient id="progressGradient" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
