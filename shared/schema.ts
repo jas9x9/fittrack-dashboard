@@ -16,6 +16,7 @@ export const goals = pgTable("goals", {
   targetValue: real("target_value").notNull(),
   targetDate: timestamp("target_date").notNull(),
   currentValue: real("current_value").default(0),
+  unit: text("unit").notNull().default("KGs"),
   isActive: integer("is_active").default(1), // 1 = active, 0 = completed/inactive
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
@@ -40,6 +41,8 @@ export const insertGoalSchema = createInsertSchema(goals).omit({
 }).extend({
   targetValue: z.coerce.number().positive(),
   currentValue: z.coerce.number().min(0).optional(),
+  targetDate: z.coerce.date(), // Accept string or Date, coerce to Date
+  unit: z.string().min(1, "Unit is required"),
 });
 
 export const insertWorkoutProgressSchema = createInsertSchema(workoutProgress).omit({

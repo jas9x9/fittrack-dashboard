@@ -92,6 +92,7 @@ export default function Goals() {
       exerciseId: goalData.exerciseId,
       currentValue: goalData.currentValue,
       targetValue: goalData.targetValue,
+      unit: goalData.unit,
       targetDate: goalData.targetDate,
     };
 
