@@ -11,6 +11,7 @@ import type {
   WorkoutProgressWithExercise
 } from '@shared/schema';
 import { eq, desc } from 'drizzle-orm';
+import { logger } from '../utils/logger';
 
 export interface IStorage {
   // Exercise methods
@@ -39,9 +40,29 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
+  // Helper method to wrap database operations with logging
+  private async executeDbOperation<T>(
+    operation: string,
+    table: string,
+    dbCall: () => Promise<T>
+  ): Promise<T> {
+    const startTime = Date.now();
+    try {
+      const result = await dbCall();
+      const duration = Date.now() - startTime;
+      logger.logDatabase(operation, table, true, duration);
+      return result;
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      logger.logDatabase(operation, table, false, duration, error as Error);
+      throw error;
+    }
+  }
   // Exercise methods
   async getAllExercises(): Promise<Exercise[]> {
-    return await db.select().from(exercises);
+    return this.executeDbOperation('SELECT', 'exercises', () =>
+      db.select().from(exercises)
+    );
   }
 
   async getExercise(id: string): Promise<Exercise | undefined> {

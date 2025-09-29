@@ -27,6 +27,32 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    // Production optimizations
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true, // Remove console logs in production
+        drop_debugger: true,
+      },
+    },
+    rollupOptions: {
+      output: {
+        // Code splitting for better caching
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          router: ['@tanstack/react-query'],
+          ui: ['lucide-react', '@radix-ui/react-dialog', '@radix-ui/react-alert-dialog'],
+        },
+      },
+    },
+    // Generate source maps for production debugging
+    sourcemap: process.env.NODE_ENV === 'production' ? 'hidden' : true,
+    // Chunk size warning limit
+    chunkSizeWarningLimit: 1000,
+    // CSS optimization
+    cssCodeSplit: true,
+    // Asset optimization
+    assetsInlineLimit: 4096, // 4kb
   },
   server: {
     fs: {

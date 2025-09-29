@@ -13,6 +13,17 @@ export class ApiError extends Error {
   }
 }
 
+// API monitoring interface
+interface ApiMetrics {
+  endpoint: string;
+  method: string;
+  status: number;
+  duration: number;
+  timestamp: string;
+  success: boolean;
+  error?: string;
+}
+
 class ApiClient {
   private baseUrl: string;
 
@@ -20,11 +31,39 @@ class ApiClient {
     this.baseUrl = baseUrl;
   }
 
+  // Log API metrics for monitoring
+  private logApiMetrics(metrics: ApiMetrics) {
+    if (process.env.NODE_ENV === 'development') {
+      const status = metrics.success ? '✅' : '❌';
+      console.log(`${status} API ${metrics.method} ${metrics.endpoint} - ${metrics.status} (${metrics.duration}ms)`);
+      if (!metrics.success && metrics.error) {
+        console.error(`Error: ${metrics.error}`);
+      }
+    }
+
+    // In production, send metrics to monitoring endpoint
+    if (process.env.NODE_ENV === 'production') {
+      try {
+        fetch('/api/metrics', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(metrics),
+        }).catch(() => {
+          // Silently fail - don't break app if monitoring fails
+        });
+      } catch {
+        // Silently fail
+      }
+    }
+  }
+
   private async request<T>(
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
+    const method = options.method || 'GET';
+    const startTime = Date.now();
 
     const config: RequestInit = {
       headers: {
@@ -36,6 +75,7 @@ class ApiClient {
 
     try {
       const response = await fetch(url, config);
+      const duration = Date.now() - startTime;
 
       // Handle different response types
       let data;
@@ -47,27 +87,66 @@ class ApiClient {
         data = await response.text();
       }
 
+      // Log successful request metrics
+      this.logApiMetrics({
+        endpoint,
+        method,
+        status: response.status,
+        duration,
+        timestamp: new Date().toISOString(),
+        success: response.ok
+      });
+
       if (!response.ok) {
-        throw new ApiError(
+        const apiError = new ApiError(
           response.status,
           response.statusText,
           data?.message || 'An error occurred',
           data?.errors
         );
+
+        // Log error metrics
+        this.logApiMetrics({
+          endpoint,
+          method,
+          status: response.status,
+          duration,
+          timestamp: new Date().toISOString(),
+          success: false,
+          error: apiError.message
+        });
+
+        throw apiError;
       }
 
       return data as T;
     } catch (error) {
+      const duration = Date.now() - startTime;
+
       if (error instanceof ApiError) {
+        // Already logged above
         throw error;
       }
 
       // Network errors, etc.
-      throw new ApiError(
+      const networkError = new ApiError(
         0,
         'Network Error',
         error instanceof Error ? error.message : 'Network request failed'
       );
+
+      // Log network error metrics
+      this.logApiMetrics({
+        endpoint,
+        method,
+        status: 0,
+        duration,
+        timestamp: new Date().toISOString(),
+        success: false,
+        error: networkError.message
+      });
+
+      throw networkError;
     }
   }
 

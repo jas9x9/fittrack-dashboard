@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import Goals from "@/pages/Goals";
 
 function App() {
@@ -19,7 +20,9 @@ function App() {
               <ThemeToggle />
             </header>
             <main>
-              <Goals />
+              <ErrorBoundary>
+                <Goals />
+              </ErrorBoundary>
             </main>
           </div>
           <Toaster />
