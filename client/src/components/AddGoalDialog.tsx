@@ -26,8 +26,6 @@ import { format } from "date-fns";
 interface Exercise {
   id: string;
   name: string;
-  unit: string;
-  description?: string;
 }
 
 interface AddGoalDialogProps {

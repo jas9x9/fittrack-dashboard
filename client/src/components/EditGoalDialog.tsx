@@ -34,8 +34,6 @@ interface Goal {
 interface Exercise {
   id: string;
   name: string;
-  unit: string;
-  description?: string;
 }
 
 interface EditGoalDialogProps {

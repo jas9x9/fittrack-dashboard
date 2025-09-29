@@ -26,8 +26,6 @@ import { format } from "date-fns";
 interface Exercise {
   id: string;
   name: string;
-  unit: string;
-  description?: string;
 }
 
 interface AddWorkoutDialogProps {
@@ -38,7 +36,7 @@ interface AddWorkoutDialogProps {
   onSubmit: (workout: {
     exerciseId: string;
     value: number;
-    sessionDate: Date;
+    date: Date;
     notes?: string;
   }) => void;
 }
@@ -64,7 +62,7 @@ export function AddWorkoutDialog({
     onSubmit({
       exerciseId,
       value: parseFloat(value),
-      sessionDate,
+      date: sessionDate,
       notes: notes.trim() || undefined,
     });
 
@@ -106,7 +104,7 @@ export function AddWorkoutDialog({
 
           <div className="space-y-2">
             <Label htmlFor="value">
-              Performance Value {selectedExercise && `(${selectedExercise.unit})`}
+              Performance Value
             </Label>
             <Input
               id="value"
@@ -117,11 +115,6 @@ export function AddWorkoutDialog({
               data-testid="input-workout-value"
               required
             />
-            {selectedExercise?.description && (
-              <p className="text-xs text-muted-foreground">
-                {selectedExercise.description}
-              </p>
-            )}
           </div>
 
           <div className="space-y-2">

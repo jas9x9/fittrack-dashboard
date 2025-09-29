@@ -4,82 +4,65 @@ import { AddGoalDialog } from "@/components/AddGoalDialog";
 import { AddWorkoutDialog } from "@/components/AddWorkoutDialog";
 import { EditGoalDialog } from "@/components/EditGoalDialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useGoals, useCreateGoal, useUpdateGoal } from "@/hooks/useGoals";
+import { useExercises } from "@/hooks/useExercises";
+import { useLogWorkoutProgress } from "@/hooks/useWorkoutProgress";
+import { dateUtils, type GoalWithExercise, type CreateGoalRequest, type UpdateGoalRequest, type CreateWorkoutProgressRequest } from "@/api";
 import { useToast } from "@/hooks/use-toast";
-import { Plus } from "lucide-react";
+import { Plus, AlertCircle, Loader2 } from "lucide-react";
 
-// TODO: Remove mock data when implementing real backend
-const mockExercises = [
-  { id: '1', name: 'Squats', unit: 'lbs', description: 'Lower body compound movement' },
-  { id: '2', name: 'Deadlift', unit: 'lbs', description: 'Full body compound lift' },
-  { id: '3', name: 'Bench Press', unit: 'lbs', description: 'Chest and tricep strength exercise' },
-  { id: '4', name: 'Shoulder Press', unit: 'lbs', description: 'Overhead pressing movement' },
-  { id: '5', name: 'Push Ups', unit: 'reps', description: 'Bodyweight upper body exercise' },
-  { id: '6', name: 'Pull Ups', unit: 'reps', description: 'Bodyweight pulling exercise' },
-  { id: '7', name: 'Running', unit: 'miles', description: 'Cardiovascular endurance' },
-];
+// Convert GoalWithExercise to GoalCard props format
+function convertGoalForCard(goal: GoalWithExercise) {
+  return {
+    id: goal.id,
+    exerciseName: goal.exercise?.name || 'Unknown Exercise',
+    currentValue: goal.currentValue,
+    targetValue: goal.targetValue,
+    unit: 'units', // We'll handle units in the component
+    targetDate: dateUtils.formatForDisplay(goal.targetDate),
+    daysLeft: dateUtils.daysUntil(goal.targetDate),
+    isCompleted: goal.isActive === 0
+  };
+}
 
-const mockGoals = [
-  {
-    id: '1',
-    exerciseName: 'Bench Press',
-    currentValue: 140,
-    targetValue: 150,
-    unit: 'lbs',
-    targetDate: '2024-12-31'
-  },
-  {
-    id: '2',
-    exerciseName: 'Running',
-    currentValue: 4.2,
-    targetValue: 5.0,
-    unit: 'miles',
-    targetDate: '2024-11-15'
-  },
-  {
-    id: '3',
-    exerciseName: 'Push-ups',
-    currentValue: 50,
-    targetValue: 50,
-    unit: 'reps',
-    targetDate: '2024-10-01'
-  },
-  {
-    id: '4',
-    exerciseName: 'Squats',
-    currentValue: 65,
-    targetValue: 100,
-    unit: 'lbs',
-    targetDate: '2024-12-15'
-  },
-  {
-    id: '5',
-    exerciseName: 'Yoga',
-    currentValue: 20,
-    targetValue: 30,
-    unit: 'minutes',
-    targetDate: '2024-11-30'
-  }
-];
+// Loading skeleton for goals
+function GoalsSkeleton() {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {[...Array(6)].map((_, i) => (
+        <div key={i} className="space-y-3">
+          <Skeleton className="h-32 w-full rounded-lg" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function Goals() {
   const [showAddGoal, setShowAddGoal] = useState(false);
   const [showAddWorkout, setShowAddWorkout] = useState(false);
   const [showEditGoal, setShowEditGoal] = useState(false);
-  const [selectedGoalForEdit, setSelectedGoalForEdit] = useState<typeof mockGoals[0] | null>(null);
+  const [selectedGoalForEdit, setSelectedGoalForEdit] = useState<GoalWithExercise | null>(null);
   const [selectedExerciseId, setSelectedExerciseId] = useState<string>();
 
   const { toast } = useToast();
 
+  // React Query hooks
+  const { data: goals, isLoading: goalsLoading, error: goalsError } = useGoals();
+  const { data: exercises, isLoading: exercisesLoading, error: exercisesError } = useExercises();
+  const createGoalMutation = useCreateGoal();
+  const updateGoalMutation = useUpdateGoal();
+  const logProgressMutation = useLogWorkoutProgress();
+
+
   const handleEditGoal = (id: string) => {
-    const goal = mockGoals.find(g => g.id === id);
+    const goal = goals?.find(g => g.id === id);
     if (goal) {
       setSelectedGoalForEdit(goal);
       setShowEditGoal(true);
@@ -87,33 +70,51 @@ export default function Goals() {
   };
 
   const handleUpdateGoal = (goalId: string, updates: { exerciseName: string; currentValue: number; targetValue: number; unit: string; targetDate: Date }) => {
-    console.log('Updating goal:', goalId, updates);
+    const updateData: UpdateGoalRequest = {
+      currentValue: updates.currentValue,
+      targetValue: updates.targetValue,
+      targetDate: updates.targetDate,
+    };
 
-    toast({
-      title: "Goal Updated",
-      description: `Successfully updated ${updates.exerciseName} from ${updates.currentValue} to ${updates.targetValue} ${updates.unit} by ${updates.targetDate.toLocaleDateString()}`,
-    });
-
-    // TODO: Implement actual goal update functionality with backend
+    updateGoalMutation.mutate({ id: goalId, data: updateData });
   };
 
   const handleAddProgress = (goalId: string) => {
-    const goal = mockGoals.find(g => g.id === goalId);
+    const goal = goals?.find(g => g.id === goalId);
     if (goal) {
-      const exercise = mockExercises.find(e => e.name === goal.exerciseName);
-      setSelectedExerciseId(exercise?.id);
+      setSelectedExerciseId(goal.exerciseId);
       setShowAddWorkout(true);
     }
   };
 
-  const handleAddGoal = (goal: { exerciseId: string; currentValue: number; targetValue: number; unit: string; targetDate: Date }) => {
-    console.log('New goal created:', goal);
-    // TODO: Implement add goal functionality
+  const handleAddGoal = (goalData: { exerciseId: string; currentValue: number; targetValue: number; unit: string; targetDate: Date }) => {
+    const createData: CreateGoalRequest = {
+      exerciseId: goalData.exerciseId,
+      currentValue: goalData.currentValue,
+      targetValue: goalData.targetValue,
+      targetDate: goalData.targetDate,
+    };
+
+    createGoalMutation.mutate(createData, {
+      onSuccess: () => {
+        setShowAddGoal(false);
+      }
+    });
   };
 
-  const handleAddWorkout = (workout: any) => {
-    console.log('New workout logged:', workout);
-    // TODO: Implement add workout functionality
+  const handleAddWorkout = (workoutData: { exerciseId: string; value: number; date: Date; notes?: string }) => {
+    const progressData: CreateWorkoutProgressRequest = {
+      exerciseId: workoutData.exerciseId,
+      value: workoutData.value,
+      notes: workoutData.notes,
+    };
+
+    logProgressMutation.mutate(progressData, {
+      onSuccess: () => {
+        setShowAddWorkout(false);
+        setSelectedExerciseId(undefined);
+      }
+    });
   };
 
 
@@ -133,36 +134,51 @@ export default function Goals() {
       </div>
 
 
+      {/* Error State */}
+      {(goalsError || exercisesError) && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            {goalsError?.message || exercisesError?.message || 'Failed to load data'}
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Loading State */}
+      {(goalsLoading || exercisesLoading) && <GoalsSkeleton />}
+
       {/* Goals Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {mockGoals.length === 0 ? (
-          <div className="col-span-full text-center py-12">
-            <div className="text-muted-foreground">
-              <Plus className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p className="text-lg mb-2">No goals found</p>
-              <p className="text-sm">
-                Start by creating your first fitness goal
-              </p>
+      {!goalsLoading && !exercisesLoading && goals && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {goals.length === 0 ? (
+            <div className="col-span-full text-center py-12">
+              <div className="text-muted-foreground">
+                <Plus className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p className="text-lg mb-2">No goals found</p>
+                <p className="text-sm">
+                  Start by creating your first fitness goal
+                </p>
+              </div>
             </div>
-          </div>
-        ) : (
-          mockGoals.map((goal) => (
-            <GoalCard
-              key={goal.id}
-              {...goal}
-              onEdit={handleEditGoal}
-              onAddProgress={handleAddProgress}
-            />
-          ))
-        )}
-      </div>
+          ) : (
+            goals.map((goal) => (
+              <GoalCard
+                key={goal.id}
+                {...convertGoalForCard(goal)}
+                onEdit={handleEditGoal}
+                onAddProgress={handleAddProgress}
+              />
+            ))
+          )}
+        </div>
+      )}
 
 
       {/* Dialogs */}
       <AddGoalDialog
         open={showAddGoal}
         onOpenChange={setShowAddGoal}
-        exercises={mockExercises}
+        exercises={exercises || []}
         onSubmit={handleAddGoal}
       />
 
@@ -172,8 +188,15 @@ export default function Goals() {
           setShowEditGoal(open);
           if (!open) setSelectedGoalForEdit(null);
         }}
-        goal={selectedGoalForEdit}
-        exercises={mockExercises}
+        goal={selectedGoalForEdit && selectedGoalForEdit.exercise ? {
+          id: selectedGoalForEdit.id,
+          exerciseName: selectedGoalForEdit.exercise.name,
+          currentValue: selectedGoalForEdit.currentValue,
+          targetValue: selectedGoalForEdit.targetValue,
+          unit: 'units',
+          targetDate: dateUtils.formatForInput(selectedGoalForEdit.targetDate)
+        } : null}
+        exercises={exercises || []}
         onSubmit={handleUpdateGoal}
       />
 
@@ -183,7 +206,7 @@ export default function Goals() {
           setShowAddWorkout(open);
           if (!open) setSelectedExerciseId(undefined);
         }}
-        exercises={mockExercises}
+        exercises={exercises || []}
         preselectedExerciseId={selectedExerciseId}
         onSubmit={handleAddWorkout}
       />
