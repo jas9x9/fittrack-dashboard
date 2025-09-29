@@ -18,7 +18,6 @@ export default function GoalCardExample() {
         targetValue={150}
         unit="lbs"
         targetDate="2024-12-31"
-        category="Strength"
         onEdit={handleEdit}
         onAddProgress={handleAddProgress}
       />
@@ -29,7 +28,6 @@ export default function GoalCardExample() {
         targetValue={5.0}
         unit="miles"
         targetDate="2024-11-15"
-        category="Cardio"
         onEdit={handleEdit}
         onAddProgress={handleAddProgress}
       />
@@ -40,7 +38,6 @@ export default function GoalCardExample() {
         targetValue={50}
         unit="reps"
         targetDate="2024-10-01"
-        category="Strength"
         onEdit={handleEdit}
         onAddProgress={handleAddProgress}
       />

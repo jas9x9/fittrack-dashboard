@@ -1,4 +1,4 @@
-import { db } from './storage/database';
+import { db } from './database';
 import { exercises, goals, workoutProgress } from '@shared/schema';
 import type {
   Exercise,

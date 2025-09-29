@@ -103,6 +103,8 @@ export function EditGoalDialog({ open, onOpenChange, goal, exercises, onSubmit }
     const selectedExercise = exercises.find(ex => ex.id === exerciseId);
     if (!selectedExercise) return;
 
+    if (!targetDate) return;
+
     onSubmit(goal.id, {
       exerciseName: selectedExercise.name,
       currentValue: parseFloat(currentValue),

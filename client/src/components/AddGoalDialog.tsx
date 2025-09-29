@@ -74,6 +74,8 @@ export function AddGoalDialog({ open, onOpenChange, exercises, onSubmit }: AddGo
     // If there are errors, don't submit
     if (Object.keys(newErrors).length > 0) return;
 
+    if (!targetDate) return;
+
     onSubmit({
       exerciseId,
       currentValue: parseFloat(currentValue),

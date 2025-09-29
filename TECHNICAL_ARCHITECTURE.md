@@ -51,9 +51,7 @@
 -- Core exercise definitions
 exercises (
   id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
-  name TEXT NOT NULL,                    -- "Bench Press", "Running", "Push-ups"
-  unit TEXT NOT NULL,                    -- "lbs", "miles", "reps"
-  description TEXT                       -- Optional exercise notes
+  name TEXT NOT NULL                     -- "Bench Press", "Running", "Push-ups"
 );
 
 -- User fitness goals
@@ -170,12 +168,12 @@ git push origin main
 #### **1.6 Seed Data**
 - [ ] Create common exercises seed data
   ```sql
-  INSERT INTO exercises (name, unit, description) VALUES
-  ('Bench Press', 'lbs', 'Chest and tricep strength exercise'),
-  ('Squats', 'lbs', 'Lower body compound movement'),
-  ('Running', 'miles', 'Cardiovascular endurance'),
-  ('Push-ups', 'reps', 'Bodyweight upper body exercise'),
-  ('Deadlift', 'lbs', 'Full body compound lift');
+  INSERT INTO exercises (name) VALUES
+  ('Bench Press'),
+  ('Squats'),
+  ('Running'),
+  ('Push-ups'),
+  ('Deadlift');
   ```
 - [ ] Create sample goals for testing
 - [ ] Create sample workout progress entries
