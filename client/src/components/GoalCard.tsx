@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { WorkoutChart } from "./WorkoutChart";
 import { Target, Calendar, Edit, Plus, PartyPopper } from "lucide-react";
+import type { WorkoutProgress } from "@/api";
 
 interface GoalCardProps {
   id: string;
@@ -13,27 +14,30 @@ interface GoalCardProps {
   targetDate: string;
   onEdit?: (id: string) => void;
   onAddProgress?: (id: string) => void;
+  progressData?: WorkoutProgress[];
   className?: string;
 }
 
-// Generate mock chart data for demonstration
-function generateMockData(exerciseName: string, currentValue: number) {
-  const baseValue = Math.max(currentValue - 20, currentValue * 0.7);
-  const dataPoints = [];
-  
-  for (let i = 0; i < 6; i++) {
-    const date = new Date();
-    date.setDate(date.getDate() - (5 - i) * 3);
-    const variation = Math.random() * 10 - 5;
-    const value = Math.round(baseValue + (currentValue - baseValue) * (i / 5) + variation);
-    
-    dataPoints.push({
-      date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-      value: Math.max(value, baseValue * 0.8)
-    });
+// Transform workout progress data into chart format
+function formatProgressForChart(progressData: WorkoutProgress[] | undefined, currentValue: number) {
+  // If no progress data, show single point with current value
+  if (!progressData || progressData.length === 0) {
+    return [{
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      value: currentValue
+    }];
   }
-  
-  return dataPoints;
+
+  // Sort progress by date (oldest to newest) and limit to last 30 entries
+  const sortedProgress = [...progressData]
+    .sort((a, b) => a.progressDate.getTime() - b.progressDate.getTime())
+    .slice(-30);
+
+  // Transform to chart format
+  return sortedProgress.map(progress => ({
+    date: progress.progressDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+    value: progress.value
+  }));
 }
 
 export function GoalCard({
@@ -45,6 +49,7 @@ export function GoalCard({
   targetDate,
   onEdit,
   onAddProgress,
+  progressData,
   className = ""
 }: GoalCardProps) {
   const progress = Math.min((currentValue / targetValue) * 100, 100);
@@ -90,8 +95,8 @@ export function GoalCard({
             </div>
             <span>{Math.round(progress)}% complete</span>
           </div>
-          <WorkoutChart 
-            data={generateMockData(exerciseName, currentValue)} 
+          <WorkoutChart
+            data={formatProgressForChart(progressData, currentValue)}
             title="Recent Progress"
             unit={unit}
             className="border-t pt-2"

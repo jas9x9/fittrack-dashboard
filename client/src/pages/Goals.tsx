@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useGoals, useCreateGoal, useUpdateGoal } from "@/hooks/useGoals";
 import { useExercises } from "@/hooks/useExercises";
-import { useLogWorkoutProgress } from "@/hooks/useWorkoutProgress";
+import { useLogWorkoutProgress, useWorkoutProgress } from "@/hooks/useWorkoutProgress";
 import { dateUtils, type GoalWithExercise, type CreateGoalRequest, type UpdateGoalRequest, type CreateWorkoutProgressRequest } from "@/api";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, AlertCircle, Loader2 } from "lucide-react";
@@ -56,6 +56,7 @@ export default function Goals() {
   // React Query hooks
   const { data: goals, isLoading: goalsLoading, error: goalsError } = useGoals();
   const { data: exercises, isLoading: exercisesLoading, error: exercisesError } = useExercises();
+  const { data: allProgress, isLoading: progressLoading } = useWorkoutProgress();
   const createGoalMutation = useCreateGoal();
   const updateGoalMutation = useUpdateGoal();
   const logProgressMutation = useLogWorkoutProgress();
@@ -162,14 +163,22 @@ export default function Goals() {
               </div>
             </div>
           ) : (
-            goals.map((goal) => (
-              <GoalCard
-                key={goal.id}
-                {...convertGoalForCard(goal)}
-                onEdit={handleEditGoal}
-                onAddProgress={handleAddProgress}
-              />
-            ))
+            goals.map((goal) => {
+              // Filter progress data for this specific exercise
+              const progressForExercise = allProgress?.filter(
+                progress => progress.exerciseId === goal.exerciseId
+              );
+
+              return (
+                <GoalCard
+                  key={goal.id}
+                  {...convertGoalForCard(goal)}
+                  progressData={progressForExercise}
+                  onEdit={handleEditGoal}
+                  onAddProgress={handleAddProgress}
+                />
+              );
+            })
           )}
         </div>
       )}
