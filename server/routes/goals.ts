@@ -8,6 +8,7 @@ export const goalsRouter = Router();
 goalsRouter.get('/', async (req, res, next) => {
   try {
     const goals = await storage.getAllGoals();
+    console.log('[DEBUG] First goal from DB:', JSON.stringify(goals[0], null, 2));
     res.json(goals);
   } catch (error) {
     next(error);

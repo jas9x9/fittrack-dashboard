@@ -20,7 +20,7 @@ function convertGoalForCard(goal: GoalWithExercise) {
     exerciseName: goal.exercise?.name || 'Unknown Exercise',
     currentValue: goal.currentValue,
     targetValue: goal.targetValue,
-    unit: 'units', // We'll handle units in the component
+    unit: goal.unit || 'units',
     targetDate: dateUtils.formatForDisplay(goal.targetDate),
     daysLeft: dateUtils.daysUntil(goal.targetDate),
     isCompleted: goal.isActive === 0

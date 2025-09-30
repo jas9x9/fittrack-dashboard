@@ -99,14 +99,17 @@ export function GoalCard({
       </CardHeader>
       <CardContent>
         <div className="mb-2">
-          <div className="flex items-center gap-2 mb-2">
-            <Target className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-mono">
-              {currentValue} / {targetValue} {unit}
-            </span>
-            {isCompleted && (
-              <PartyPopper className="h-4 w-4 text-primary" data-testid="icon-goal-achieved" />
+          <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+            {startingValue !== currentValue && (
+              <span>Started at {startingValue} {unit}</span>
             )}
+            <span className="flex items-center gap-1 ml-auto">
+              <Target className="h-3 w-3" />
+              {currentValue} / {targetValue} {unit}
+              {isCompleted && (
+                <PartyPopper className="h-4 w-4 text-primary" data-testid="icon-goal-achieved" />
+              )}
+            </span>
           </div>
           <Progress value={progress} className="h-2 mb-2" />
           <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
@@ -120,11 +123,6 @@ export function GoalCard({
             </div>
             <span>{Math.round(progress)}% complete</span>
           </div>
-          {startingValue !== currentValue && (
-            <div className="text-xs text-muted-foreground mb-2">
-              Started at {startingValue} {unit}
-            </div>
-          )}
           <WorkoutChart
             data={formatProgressForChart(progressData, currentValue)}
             title="Recent Progress"

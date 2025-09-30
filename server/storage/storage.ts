@@ -85,7 +85,7 @@ export class DatabaseStorage implements IStorage {
     return result.rowCount > 0;
   }
 
-  // Goal methods
+  // Goal methods - includes unit field
   async getAllGoals(): Promise<GoalWithExercise[]> {
     return await db
       .select({
@@ -94,6 +94,7 @@ export class DatabaseStorage implements IStorage {
         targetValue: goals.targetValue,
         targetDate: goals.targetDate,
         currentValue: goals.currentValue,
+        unit: goals.unit, // Added unit field
         isActive: goals.isActive,
         createdAt: goals.createdAt,
         exercise: exercises
