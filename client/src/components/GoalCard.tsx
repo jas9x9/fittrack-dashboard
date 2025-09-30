@@ -52,7 +52,32 @@ export function GoalCard({
   progressData,
   className = ""
 }: GoalCardProps) {
-  const progress = Math.min((currentValue / targetValue) * 100, 100);
+  // Calculate starting baseline from first workout entry
+  // Create a sorted copy to avoid mutating original array
+  const sortedProgress = progressData
+    ? [...progressData].sort((a, b) => a.progressDate.getTime() - b.progressDate.getTime())
+    : undefined;
+
+  // Starting value = first workout logged, or current if no workouts yet
+  const startingValue = sortedProgress?.[0]?.value ?? currentValue;
+
+  // Progress calculation based on starting point
+  const totalDistance = targetValue - startingValue;
+  const progressMade = currentValue - startingValue;
+
+  // Handle edge cases:
+  // - If no distance to cover (already at or past target from start), show 100%
+  // - If going backwards (currentValue < startingValue), show 0%
+  // - Otherwise calculate percentage and cap at 100%
+  let progress = 0;
+  if (totalDistance <= 0) {
+    progress = 100; // Already at or past target from the start
+  } else if (progressMade < 0) {
+    progress = 0; // Going backwards
+  } else {
+    progress = Math.min((progressMade / totalDistance) * 100, 100);
+  }
+
   const isCompleted = currentValue >= targetValue;
   const daysRemaining = Math.ceil((new Date(targetDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
 
@@ -88,13 +113,18 @@ export function GoalCard({
             <div className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />
               <span>
-                {daysRemaining > 0 ? `${daysRemaining} days left` : 
-                 daysRemaining === 0 ? 'Due today' : 
+                {daysRemaining > 0 ? `${daysRemaining} days left` :
+                 daysRemaining === 0 ? 'Due today' :
                  `${Math.abs(daysRemaining)} days overdue`}
               </span>
             </div>
             <span>{Math.round(progress)}% complete</span>
           </div>
+          {startingValue !== currentValue && (
+            <div className="text-xs text-muted-foreground mb-2">
+              Started at {startingValue} {unit}
+            </div>
+          )}
           <WorkoutChart
             data={formatProgressForChart(progressData, currentValue)}
             title="Recent Progress"
