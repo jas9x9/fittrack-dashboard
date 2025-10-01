@@ -213,9 +213,10 @@ export default function Goals() {
         goal={selectedGoalForEdit && selectedGoalForEdit.exercise ? {
           id: selectedGoalForEdit.id,
           exerciseName: selectedGoalForEdit.exercise.name,
+          startingValue: selectedGoalForEdit.startingValue,
           currentValue: selectedGoalForEdit.currentValue,
           targetValue: selectedGoalForEdit.targetValue,
-          unit: 'units',
+          unit: selectedGoalForEdit.unit || 'units',
           targetDate: dateUtils.formatForInput(selectedGoalForEdit.targetDate)
         } : null}
         exercises={exercises || []}

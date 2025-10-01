@@ -93,9 +93,7 @@ export function GoalCard({
       <CardContent>
         <div className="mb-2">
           <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
-            {startingValue !== currentValue && (
-              <span>Started at {startingValue} {unit}</span>
-            )}
+            <span>Started at {startingValue} {unit}</span>
             <span className="flex items-center gap-1 ml-auto">
               <Target className="h-3 w-3" />
               {currentValue} / {targetValue} {unit}

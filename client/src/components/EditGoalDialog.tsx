@@ -35,6 +35,7 @@ import { format } from "date-fns";
 interface Goal {
   id: string;
   exerciseName: string;
+  startingValue: number;
   currentValue: number;
   targetValue: number;
   unit: string;
@@ -95,12 +96,11 @@ export function EditGoalDialog({ open, onOpenChange, goal, exercises, onSubmit, 
     const newErrors: Record<string, string> = {};
 
     if (!exerciseId) newErrors.exerciseId = "Exercise is required";
-    if (!currentValue) newErrors.currentValue = "Current value is required";
     if (!targetValue) newErrors.targetValue = "Target value is required";
     if (!targetDate) newErrors.targetDate = "Target date is required";
 
-    if (currentValue && targetValue && parseFloat(currentValue) >= parseFloat(targetValue)) {
-      newErrors.targetValue = "Target value must be greater than current value";
+    if (targetValue && parseFloat(targetValue) <= goal.startingValue) {
+      newErrors.targetValue = "Target value must be greater than starting value";
     }
 
     setErrors(newErrors);
@@ -117,7 +117,7 @@ export function EditGoalDialog({ open, onOpenChange, goal, exercises, onSubmit, 
 
     onSubmit(goal.id, {
       exerciseName: selectedExercise.name,
-      currentValue: parseFloat(currentValue),
+      currentValue: goal.currentValue, // Keep current value unchanged
       targetValue: parseFloat(targetValue),
       unit,
       targetDate,
@@ -170,42 +170,18 @@ export function EditGoalDialog({ open, onOpenChange, goal, exercises, onSubmit, 
             )}
           </div>
 
-          {/* Current and Unit (same row) */}
+          {/* Starting Value (READ-ONLY) */}
           <div className="space-y-2">
-            <Label htmlFor="currentValue">Current <span className="text-red-500">*</span></Label>
-            <div className="flex items-center gap-2">
-              <Input
-                id="currentValue"
-                type="number"
-                value={currentValue}
-                onChange={(e) => {
-                  setCurrentValue(e.target.value);
-                  if (errors.currentValue) setErrors(prev => ({ ...prev, currentValue: "" }));
-                }}
-                placeholder="Enter current value"
-                className={`flex-1 ${errors.currentValue ? "border-red-500" : ""}`}
-                data-testid="input-current-value"
-              />
-              <Select value={unit} onValueChange={setUnit}>
-                <SelectTrigger className="w-24" data-testid="select-current-unit">
-                  <SelectValue placeholder="Unit" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="KGs">
-                    <span className="text-foreground">KGs</span>
-                  </SelectItem>
-                  <SelectItem value="Reps">
-                    <span className="text-foreground">Reps</span>
-                  </SelectItem>
-                  <SelectItem value="KMs">
-                    <span className="text-foreground">KMs</span>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            {errors.currentValue && (
-              <p className="text-sm text-red-500">{errors.currentValue}</p>
-            )}
+            <Label htmlFor="startingValue">Starting Value</Label>
+            <Input
+              id="startingValue"
+              type="text"
+              value={`${goal.startingValue} ${unit}`}
+              readOnly
+              disabled
+              className="bg-muted cursor-not-allowed"
+              data-testid="input-starting-value-readonly"
+            />
           </div>
 
           {/* Target and Unit (same row) */}
