@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -53,6 +53,13 @@ export function AddWorkoutDialog({
   const [sessionDate, setSessionDate] = useState<Date>(new Date());
   const [notes, setNotes] = useState("");
 
+  // Update exerciseId when preselectedExerciseId changes
+  useEffect(() => {
+    if (preselectedExerciseId) {
+      setExerciseId(preselectedExerciseId);
+    }
+  }, [preselectedExerciseId]);
+
   const selectedExercise = exercises.find(ex => ex.id === exerciseId);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -88,18 +95,30 @@ export function AddWorkoutDialog({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="exercise">Exercise</Label>
-            <Select value={exerciseId} onValueChange={setExerciseId}>
-              <SelectTrigger data-testid="select-workout-exercise">
-                <SelectValue placeholder="Select an exercise" />
-              </SelectTrigger>
-              <SelectContent>
-                {exercises.map((exercise) => (
-                  <SelectItem key={exercise.id} value={exercise.id}>
-                    <span>{exercise.name}</span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {preselectedExerciseId ? (
+              <Input
+                id="exercise"
+                type="text"
+                value={selectedExercise?.name || ''}
+                readOnly
+                disabled
+                className="bg-muted cursor-not-allowed"
+                data-testid="input-exercise-readonly"
+              />
+            ) : (
+              <Select value={exerciseId} onValueChange={setExerciseId}>
+                <SelectTrigger data-testid="select-workout-exercise">
+                  <SelectValue placeholder="Select an exercise" />
+                </SelectTrigger>
+                <SelectContent>
+                  {exercises.map((exercise) => (
+                    <SelectItem key={exercise.id} value={exercise.id}>
+                      <span>{exercise.name}</span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -140,18 +159,6 @@ export function AddWorkoutDialog({
                 />
               </PopoverContent>
             </Popover>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="notes">Notes (optional)</Label>
-            <Textarea
-              id="notes"
-              placeholder="Add notes about your workout..."
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              data-testid="textarea-workout-notes"
-              rows={2}
-            />
           </div>
 
           <DialogFooter>

@@ -1,5 +1,6 @@
 import { db } from './storage/database';
 import { exercises, goals, workoutProgress } from '@shared/schema';
+import { asc } from 'drizzle-orm';
 import type {
   Exercise,
   InsertExercise,
@@ -66,7 +67,7 @@ export class DatabaseStorage implements IStorage {
 
   // Goal methods
   async getAllGoals(): Promise<GoalWithExercise[]> {
-    return await db
+    const results = await db
       .select({
         id: goals.id,
         exerciseId: goals.exerciseId,
@@ -80,7 +81,10 @@ export class DatabaseStorage implements IStorage {
         exercise: exercises
       })
       .from(goals)
-      .innerJoin(exercises, eq(goals.exerciseId, exercises.id));
+      .innerJoin(exercises, eq(goals.exerciseId, exercises.id))
+      .orderBy(asc(goals.createdAt));
+
+    return results;
   }
 
   async getGoal(id: string): Promise<Goal | undefined> {
