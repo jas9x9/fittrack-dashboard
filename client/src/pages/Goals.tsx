@@ -3,6 +3,8 @@ import { GoalCard } from "@/components/GoalCard";
 import { AddGoalDialog } from "@/components/AddGoalDialog";
 import { AddWorkoutDialog } from "@/components/AddWorkoutDialog";
 import { EditGoalDialog } from "@/components/EditGoalDialog";
+import { ResetBaselineDialog } from "@/components/ResetBaselineDialog";
+import { NewTargetDialog } from "@/components/NewTargetDialog";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -51,6 +53,15 @@ export default function Goals() {
   const [showEditGoal, setShowEditGoal] = useState(false);
   const [selectedGoalForEdit, setSelectedGoalForEdit] = useState<GoalWithExercise | null>(null);
   const [selectedExerciseId, setSelectedExerciseId] = useState<string>();
+
+  // Edge case dialog states
+  const [showResetBaselineDialog, setShowResetBaselineDialog] = useState(false);
+  const [showNewTargetDialog, setShowNewTargetDialog] = useState(false);
+  const [edgeCaseData, setEdgeCaseData] = useState<{
+    goal: GoalWithExercise;
+    newValue: number;
+    workoutData: { exerciseId: string; value: number; date: Date; notes?: string };
+  } | null>(null);
 
   const { toast } = useToast();
 
@@ -117,6 +128,30 @@ export default function Goals() {
   };
 
   const handleAddWorkout = (workoutData: { exerciseId: string; value: number; date: Date; notes?: string }) => {
+    // Find the goal for this exercise to check for edge cases BEFORE logging
+    const goal = goals?.find(g => g.exerciseId === workoutData.exerciseId);
+
+    if (goal) {
+      // Edge Case 1: Performance Deterioration (value < startingValue)
+      if (workoutData.value < goal.startingValue) {
+        setEdgeCaseData({ goal, newValue: workoutData.value, workoutData });
+        setShowResetBaselineDialog(true);
+        setShowAddWorkout(false);
+        setSelectedExerciseId(undefined);
+        return; // Don't log progress yet, wait for user confirmation
+      }
+
+      // Edge Case 2: Goal Achievement (value >= targetValue)
+      if (workoutData.value >= goal.targetValue) {
+        setEdgeCaseData({ goal, newValue: workoutData.value, workoutData });
+        setShowNewTargetDialog(true);
+        setShowAddWorkout(false);
+        setSelectedExerciseId(undefined);
+        return; // Don't log progress yet, wait for user confirmation
+      }
+    }
+
+    // Normal case: log progress immediately
     const progressData: CreateWorkoutProgressRequest = {
       exerciseId: workoutData.exerciseId,
       value: workoutData.value,
@@ -129,6 +164,83 @@ export default function Goals() {
         setSelectedExerciseId(undefined);
       }
     });
+  };
+
+  // Handle resetting baseline
+  const handleResetBaseline = () => {
+    if (!edgeCaseData) return;
+
+    // First, log the workout progress
+    const progressData: CreateWorkoutProgressRequest = {
+      exerciseId: edgeCaseData.workoutData.exerciseId,
+      value: edgeCaseData.workoutData.value,
+      notes: edgeCaseData.workoutData.notes,
+    };
+
+    logProgressMutation.mutate(progressData, {
+      onSuccess: () => {
+        // Then update the goal's starting value
+        const updateData: UpdateGoalRequest = {
+          startingValue: edgeCaseData.newValue,
+          currentValue: edgeCaseData.newValue,
+        };
+
+        updateGoalMutation.mutate({ id: edgeCaseData.goal.id, data: updateData }, {
+          onSuccess: () => {
+            toast({
+              title: "Baseline Reset",
+              description: `Your baseline has been reset to ${edgeCaseData.newValue} ${edgeCaseData.goal.unit}`,
+            });
+            setShowResetBaselineDialog(false);
+            setEdgeCaseData(null);
+          }
+        });
+      }
+    });
+  };
+
+  // Handle keeping current baseline
+  const handleKeepBaseline = () => {
+    setShowResetBaselineDialog(false);
+    setEdgeCaseData(null);
+  };
+
+  // Handle setting new target
+  const handleSetNewTarget = (newTarget: number) => {
+    if (!edgeCaseData) return;
+
+    // First, log the workout progress
+    const progressData: CreateWorkoutProgressRequest = {
+      exerciseId: edgeCaseData.workoutData.exerciseId,
+      value: edgeCaseData.workoutData.value,
+      notes: edgeCaseData.workoutData.notes,
+    };
+
+    logProgressMutation.mutate(progressData, {
+      onSuccess: () => {
+        // Then update the goal's target value
+        const updateData: UpdateGoalRequest = {
+          targetValue: newTarget,
+        };
+
+        updateGoalMutation.mutate({ id: edgeCaseData.goal.id, data: updateData }, {
+          onSuccess: () => {
+            toast({
+              title: "New Target Set! 🎉",
+              description: `Your new target is ${newTarget} ${edgeCaseData.goal.unit}`,
+            });
+            setShowNewTargetDialog(false);
+            setEdgeCaseData(null);
+          }
+        });
+      }
+    });
+  };
+
+  // Handle keeping current target
+  const handleKeepTarget = () => {
+    setShowNewTargetDialog(false);
+    setEdgeCaseData(null);
   };
 
 
@@ -234,6 +346,33 @@ export default function Goals() {
         preselectedExerciseId={selectedExerciseId}
         onSubmit={handleAddWorkout}
       />
+
+      {/* Edge Case Dialogs */}
+      {edgeCaseData && (
+        <>
+          <ResetBaselineDialog
+            open={showResetBaselineDialog}
+            onOpenChange={setShowResetBaselineDialog}
+            exerciseName={edgeCaseData.goal.exercise?.name || 'Unknown Exercise'}
+            currentBaseline={edgeCaseData.goal.startingValue}
+            newValue={edgeCaseData.newValue}
+            unit={edgeCaseData.goal.unit || 'units'}
+            onResetBaseline={handleResetBaseline}
+            onKeepBaseline={handleKeepBaseline}
+          />
+
+          <NewTargetDialog
+            open={showNewTargetDialog}
+            onOpenChange={setShowNewTargetDialog}
+            exerciseName={edgeCaseData.goal.exercise?.name || 'Unknown Exercise'}
+            achievedValue={edgeCaseData.newValue}
+            currentTarget={edgeCaseData.goal.targetValue}
+            unit={edgeCaseData.goal.unit || 'units'}
+            onSetNewTarget={handleSetNewTarget}
+            onKeepTarget={handleKeepTarget}
+          />
+        </>
+      )}
     </div>
   );
 }
