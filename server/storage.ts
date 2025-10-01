@@ -103,6 +103,14 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteGoal(id: string): Promise<boolean> {
+    // First, get the goal to find its exercise ID
+    const goal = await this.getGoal(id);
+    if (!goal) return false;
+
+    // Delete all workout progress for this exercise
+    await db.delete(workoutProgress).where(eq(workoutProgress.exerciseId, goal.exerciseId));
+
+    // Then delete the goal
     const result = await db.delete(goals).where(eq(goals.id, id));
     return result.rowCount > 0;
   }

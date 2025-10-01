@@ -12,7 +12,7 @@ export const exercises = pgTable("exercises", {
 
 export const goals = pgTable("goals", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  exerciseId: varchar("exercise_id").references(() => exercises.id).notNull(),
+  exerciseId: varchar("exercise_id").references(() => exercises.id, { onDelete: 'cascade' }).notNull(),
   startingValue: real("starting_value").notNull(),
   targetValue: real("target_value").notNull(),
   targetDate: timestamp("target_date").notNull(),
@@ -25,7 +25,7 @@ export const goals = pgTable("goals", {
 // Renamed to workoutProgress as per architecture document
 export const workoutProgress = pgTable("workoutProgress", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  exerciseId: varchar("exercise_id").references(() => exercises.id).notNull(),
+  exerciseId: varchar("exercise_id").references(() => exercises.id, { onDelete: 'cascade' }).notNull(),
   value: real("value").notNull(),
   progressDate: timestamp("progress_date").defaultNow().notNull(),
   notes: text("notes"),

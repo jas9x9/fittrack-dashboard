@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { exercisesApi, type Exercise, type CreateExerciseRequest } from '@/api';
 import { toast } from '@/hooks/use-toast';
+import { goalKeys } from './useGoals';
+import { workoutProgressKeys } from './useWorkoutProgress';
 
 // Query keys for exercises
 export const exerciseKeys = {
@@ -99,6 +101,12 @@ export function useDeleteExercise() {
 
       // Remove detail cache
       queryClient.removeQueries({ queryKey: exerciseKeys.detail(deletedId) });
+
+      // Invalidate goals and workout progress caches
+      // (cascade delete in DB removes associated records, need to refresh cache)
+      queryClient.invalidateQueries({ queryKey: goalKeys.all });
+      queryClient.invalidateQueries({ queryKey: workoutProgressKeys.all });
+      queryClient.invalidateQueries({ queryKey: workoutProgressKeys.byExercise(deletedId) });
 
       toast({
         title: 'Exercise deleted',

@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { goalsApi, type Goal, type GoalWithExercise, type CreateGoalRequest, type UpdateGoalRequest } from '@/api';
 import { toast } from '@/hooks/use-toast';
+import { workoutProgressKeys } from './useWorkoutProgress';
 
 // Query keys for goals
 export const goalKeys = {
@@ -123,9 +124,12 @@ export function useDeleteGoal() {
       // Remove detail cache
       queryClient.removeQueries({ queryKey: goalKeys.detail(deletedId) });
 
+      // Invalidate workout progress cache since backend deletes associated progress
+      queryClient.invalidateQueries({ queryKey: workoutProgressKeys.all });
+
       toast({
         title: 'Goal deleted',
-        description: 'Goal has been deleted successfully.',
+        description: 'Goal and all associated workout progress have been deleted.',
       });
     },
     onError: (error) => {

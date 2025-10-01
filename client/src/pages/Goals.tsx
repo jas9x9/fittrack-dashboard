@@ -94,6 +94,7 @@ export default function Goals() {
   };
 
   const handleDeleteGoal = (goalId: string) => {
+    // Delete the goal (backend will also delete all associated workout progress)
     deleteGoalMutation.mutate(goalId, {
       onSuccess: () => {
         setShowEditGoal(false);

@@ -294,9 +294,9 @@ export function EditGoalDialog({ open, onOpenChange, goal, exercises, onSubmit, 
     <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete Goal?</AlertDialogTitle>
+          <AlertDialogTitle>Delete Goal and Progress?</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete this goal for {goal?.exerciseName}? This action cannot be undone.
+            Are you sure you want to delete this goal for {goal?.exerciseName}? This will permanently delete the goal and all associated workout progress history. The exercise will remain available for creating new goals. This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
