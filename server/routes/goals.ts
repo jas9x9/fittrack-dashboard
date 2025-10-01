@@ -7,9 +7,8 @@ export const goalsRouter = Router();
 // GET /api/goals - List all goals with exercise details
 goalsRouter.get('/', async (req, res, next) => {
   try {
-    const goals = await storage.getAllGoals();
-    console.log('[DEBUG] First goal from DB:', JSON.stringify(goals[0], null, 2));
-    res.json(goals);
+    const allGoals = await storage.getAllGoals();
+    res.json(allGoals);
   } catch (error) {
     next(error);
   }

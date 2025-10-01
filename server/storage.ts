@@ -73,6 +73,7 @@ export class DatabaseStorage implements IStorage {
         targetValue: goals.targetValue,
         targetDate: goals.targetDate,
         currentValue: goals.currentValue,
+        unit: goals.unit,
         isActive: goals.isActive,
         createdAt: goals.createdAt,
         exercise: exercises
