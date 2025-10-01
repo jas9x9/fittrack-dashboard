@@ -70,6 +70,7 @@ export class DatabaseStorage implements IStorage {
       .select({
         id: goals.id,
         exerciseId: goals.exerciseId,
+        startingValue: goals.startingValue,
         targetValue: goals.targetValue,
         targetDate: goals.targetDate,
         currentValue: goals.currentValue,

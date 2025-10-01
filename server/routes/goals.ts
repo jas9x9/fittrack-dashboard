@@ -35,10 +35,10 @@ goalsRouter.post('/', async (req, res, next) => {
   try {
     const validatedData = insertGoalSchema.parse(req.body);
 
-    // Business logic validation
-    if (validatedData.targetValue <= (validatedData.currentValue || 0)) {
+    // Business logic validation: target > starting
+    if (validatedData.targetValue <= validatedData.startingValue) {
       return res.status(400).json({
-        message: 'Target value must be greater than current value'
+        message: 'Target value must be greater than starting value'
       });
     }
 
@@ -48,6 +48,11 @@ goalsRouter.post('/', async (req, res, next) => {
       return res.status(400).json({
         message: 'Target date must be in the future'
       });
+    }
+
+    // Set currentValue = startingValue if not provided
+    if (validatedData.currentValue === undefined) {
+      validatedData.currentValue = validatedData.startingValue;
     }
 
     const goal = await storage.createGoal(validatedData);

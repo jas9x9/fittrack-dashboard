@@ -13,6 +13,7 @@ export const exercises = pgTable("exercises", {
 export const goals = pgTable("goals", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   exerciseId: varchar("exercise_id").references(() => exercises.id).notNull(),
+  startingValue: real("starting_value").notNull(),
   targetValue: real("target_value").notNull(),
   targetDate: timestamp("target_date").notNull(),
   currentValue: real("current_value").default(0),
@@ -39,6 +40,7 @@ export const insertGoalSchema = createInsertSchema(goals).omit({
   id: true,
   createdAt: true,
 }).extend({
+  startingValue: z.coerce.number().min(0),
   targetValue: z.coerce.number().positive(),
   currentValue: z.coerce.number().min(0).optional(),
   targetDate: z.coerce.date(), // Accept string or Date, coerce to Date

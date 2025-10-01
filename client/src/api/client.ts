@@ -199,6 +199,7 @@ export interface ExerciseApiResponse {
 export interface GoalApiResponse {
   id: string;
   exerciseId: string;
+  startingValue: number;
   targetValue: number;
   targetDate: string;  // ISO string from API
   currentValue: number;
@@ -232,6 +233,7 @@ export interface Exercise {
 export interface Goal {
   id: string;
   exerciseId: string;
+  startingValue: number;
   targetValue: number;
   targetDate: Date;     // Converted to Date object
   currentValue: number;
@@ -263,6 +265,7 @@ export interface CreateExerciseRequest {
 
 export interface CreateGoalRequest {
   exerciseId: string;
+  startingValue: number;
   targetValue: number;
   targetDate: string | Date;  // Accept both for flexibility
   currentValue?: number;
@@ -271,6 +274,7 @@ export interface CreateGoalRequest {
 
 export interface UpdateGoalRequest {
   exerciseId?: string;
+  startingValue?: number;
   targetValue?: number;
   targetDate?: string | Date;  // Accept both for flexibility
   currentValue?: number;
@@ -347,6 +351,7 @@ export const apiConverters = {
     return {
       id: apiResponse.id,
       exerciseId: apiResponse.exerciseId,
+      startingValue: apiResponse.startingValue,
       targetValue: apiResponse.targetValue,
       targetDate: dateUtils.fromApiString(apiResponse.targetDate),
       currentValue: apiResponse.currentValue,
