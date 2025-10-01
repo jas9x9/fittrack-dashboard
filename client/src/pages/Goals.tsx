@@ -6,7 +6,7 @@ import { EditGoalDialog } from "@/components/EditGoalDialog";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useGoals, useCreateGoal, useUpdateGoal } from "@/hooks/useGoals";
+import { useGoals, useCreateGoal, useUpdateGoal, useDeleteGoal } from "@/hooks/useGoals";
 import { useExercises } from "@/hooks/useExercises";
 import { useLogWorkoutProgress, useWorkoutProgress } from "@/hooks/useWorkoutProgress";
 import { dateUtils, type GoalWithExercise, type CreateGoalRequest, type UpdateGoalRequest, type CreateWorkoutProgressRequest } from "@/api";
@@ -59,6 +59,7 @@ export default function Goals() {
   const { data: allProgress, isLoading: progressLoading } = useWorkoutProgress();
   const createGoalMutation = useCreateGoal();
   const updateGoalMutation = useUpdateGoal();
+  const deleteGoalMutation = useDeleteGoal();
   const logProgressMutation = useLogWorkoutProgress();
 
 
@@ -78,6 +79,15 @@ export default function Goals() {
     };
 
     updateGoalMutation.mutate({ id: goalId, data: updateData });
+  };
+
+  const handleDeleteGoal = (goalId: string) => {
+    deleteGoalMutation.mutate(goalId, {
+      onSuccess: () => {
+        setShowEditGoal(false);
+        setSelectedGoalForEdit(null);
+      }
+    });
   };
 
   const handleAddProgress = (goalId: string) => {
@@ -208,6 +218,7 @@ export default function Goals() {
         } : null}
         exercises={exercises || []}
         onSubmit={handleUpdateGoal}
+        onDelete={handleDeleteGoal}
       />
 
       <AddWorkoutDialog

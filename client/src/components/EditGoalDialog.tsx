@@ -7,19 +7,29 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 
 interface Goal {
@@ -48,9 +58,10 @@ interface EditGoalDialogProps {
     unit: string;
     targetDate: Date;
   }) => void;
+  onDelete?: (goalId: string) => void;
 }
 
-export function EditGoalDialog({ open, onOpenChange, goal, exercises, onSubmit }: EditGoalDialogProps) {
+export function EditGoalDialog({ open, onOpenChange, goal, exercises, onSubmit, onDelete }: EditGoalDialogProps) {
   const [exerciseId, setExerciseId] = useState("");
   const [currentValue, setCurrentValue] = useState("");
   const [targetValue, setTargetValue] = useState("");
@@ -58,6 +69,7 @@ export function EditGoalDialog({ open, onOpenChange, goal, exercises, onSubmit }
   const [targetDate, setTargetDate] = useState<Date>();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const selectedExercise = exercises.find(ex => ex.id === exerciseId);
 
@@ -114,17 +126,25 @@ export function EditGoalDialog({ open, onOpenChange, goal, exercises, onSubmit }
     onOpenChange(false);
   };
 
+  const handleDelete = () => {
+    if (!goal || !onDelete) return;
+    onDelete(goal.id);
+    setShowDeleteConfirm(false);
+    onOpenChange(false);
+  };
+
   if (!goal) return null;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Edit Goal</DialogTitle>
-          <DialogDescription>
-            Update your fitness goal details.
-          </DialogDescription>
-        </DialogHeader>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Edit Goal</DialogTitle>
+            <DialogDescription>
+              Update your fitness goal details.
+            </DialogDescription>
+          </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Exercise */}
@@ -260,23 +280,60 @@ export function EditGoalDialog({ open, onOpenChange, goal, exercises, onSubmit }
           </div>
 
           <DialogFooter className="gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              data-testid="button-cancel-edit"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              data-testid="button-save-goal"
-            >
-              Save Changes
-            </Button>
+            <div className="flex w-full justify-between items-center">
+              {onDelete && (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="icon"
+                  onClick={() => setShowDeleteConfirm(true)}
+                  data-testid="button-delete-goal"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
+              <div className="flex gap-2 ml-auto">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => onOpenChange(false)}
+                  data-testid="button-cancel-edit"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  data-testid="button-save-goal"
+                >
+                  Save Changes
+                </Button>
+              </div>
+            </div>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
+
+    <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete Goal?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Are you sure you want to delete this goal for {goal?.exerciseName}? This action cannot be undone.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel data-testid="button-cancel-delete">Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={handleDelete}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            data-testid="button-confirm-delete"
+          >
+            Delete
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }
