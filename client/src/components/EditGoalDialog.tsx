@@ -284,10 +284,11 @@ export function EditGoalDialog({ open, onOpenChange, goal, exercises, onSubmit, 
               {onDelete && (
                 <Button
                   type="button"
-                  variant="destructive"
+                  variant="outline"
                   size="icon"
                   onClick={() => setShowDeleteConfirm(true)}
                   data-testid="button-delete-goal"
+                  className="border-red-500 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -326,7 +327,7 @@ export function EditGoalDialog({ open, onOpenChange, goal, exercises, onSubmit, 
           <AlertDialogCancel data-testid="button-cancel-delete">Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDelete}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className="border [border-color:var(--button-outline)] shadow-xs active:shadow-none text-red-500 hover-elevate active-elevate-2 bg-transparent"
             data-testid="button-confirm-delete"
           >
             Delete
