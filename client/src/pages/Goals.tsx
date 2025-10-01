@@ -18,6 +18,7 @@ function convertGoalForCard(goal: GoalWithExercise) {
   return {
     id: goal.id,
     exerciseName: goal.exercise?.name || 'Unknown Exercise',
+    startingValue: goal.startingValue,
     currentValue: goal.currentValue,
     targetValue: goal.targetValue,
     unit: goal.unit || 'units',
@@ -98,10 +99,11 @@ export default function Goals() {
     }
   };
 
-  const handleAddGoal = (goalData: { exerciseId: string; currentValue: number; targetValue: number; unit: string; targetDate: Date }) => {
+  const handleAddGoal = (goalData: { exerciseId: string; startingValue: number; targetValue: number; unit: string; targetDate: Date }) => {
     const createData: CreateGoalRequest = {
       exerciseId: goalData.exerciseId,
-      currentValue: goalData.currentValue,
+      startingValue: goalData.startingValue,
+      currentValue: goalData.startingValue, // Set currentValue = startingValue initially
       targetValue: goalData.targetValue,
       unit: goalData.unit,
       targetDate: goalData.targetDate,

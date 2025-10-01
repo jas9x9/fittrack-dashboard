@@ -8,6 +8,7 @@ import type { WorkoutProgress } from "@/api";
 interface GoalCardProps {
   id: string;
   exerciseName: string;
+  startingValue: number;
   currentValue: number;
   targetValue: number;
   unit: string;
@@ -43,6 +44,7 @@ function formatProgressForChart(progressData: WorkoutProgress[] | undefined, cur
 export function GoalCard({
   id,
   exerciseName,
+  startingValue,
   currentValue,
   targetValue,
   unit,
@@ -52,15 +54,6 @@ export function GoalCard({
   progressData,
   className = ""
 }: GoalCardProps) {
-  // Calculate starting baseline from first workout entry
-  // Create a sorted copy to avoid mutating original array
-  const sortedProgress = progressData
-    ? [...progressData].sort((a, b) => a.progressDate.getTime() - b.progressDate.getTime())
-    : undefined;
-
-  // Starting value = first workout logged, or current if no workouts yet
-  const startingValue = sortedProgress?.[0]?.value ?? currentValue;
-
   // Progress calculation based on starting point
   const totalDistance = targetValue - startingValue;
   const progressMade = currentValue - startingValue;

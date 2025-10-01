@@ -34,7 +34,7 @@ interface AddGoalDialogProps {
   exercises: Exercise[];
   onSubmit: (goal: {
     exerciseId: string;
-    currentValue: number;
+    startingValue: number;
     targetValue: number;
     unit: string;
     targetDate: Date;
@@ -43,7 +43,7 @@ interface AddGoalDialogProps {
 
 export function AddGoalDialog({ open, onOpenChange, exercises, onSubmit }: AddGoalDialogProps) {
   const [exerciseId, setExerciseId] = useState("");
-  const [currentValue, setCurrentValue] = useState("");
+  const [startingValue, setStartingValue] = useState("");
   const [targetValue, setTargetValue] = useState("");
   const [unit, setUnit] = useState("KGs");
   const [targetDate, setTargetDate] = useState<Date>();
@@ -59,12 +59,12 @@ export function AddGoalDialog({ open, onOpenChange, exercises, onSubmit }: AddGo
     const newErrors: Record<string, string> = {};
 
     if (!exerciseId) newErrors.exerciseId = "Exercise is required";
-    if (!currentValue) newErrors.currentValue = "Current value is required";
+    if (!startingValue) newErrors.startingValue = "Starting value is required";
     if (!targetValue) newErrors.targetValue = "Target value is required";
     if (!targetDate) newErrors.targetDate = "Target date is required";
 
-    if (currentValue && targetValue && parseFloat(currentValue) >= parseFloat(targetValue)) {
-      newErrors.targetValue = "Target value must be greater than current value";
+    if (startingValue && targetValue && parseFloat(startingValue) >= parseFloat(targetValue)) {
+      newErrors.targetValue = "Target value must be greater than starting value";
     }
 
     setErrors(newErrors);
@@ -76,7 +76,7 @@ export function AddGoalDialog({ open, onOpenChange, exercises, onSubmit }: AddGo
 
     onSubmit({
       exerciseId,
-      currentValue: parseFloat(currentValue),
+      startingValue: parseFloat(startingValue),
       targetValue: parseFloat(targetValue),
       unit,
       targetDate,
@@ -84,7 +84,7 @@ export function AddGoalDialog({ open, onOpenChange, exercises, onSubmit }: AddGo
 
     // Reset form
     setExerciseId("");
-    setCurrentValue("");
+    setStartingValue("");
     setTargetValue("");
     setUnit("KGs");
     setTargetDate(undefined);
@@ -125,24 +125,24 @@ export function AddGoalDialog({ open, onOpenChange, exercises, onSubmit }: AddGo
             )}
           </div>
 
-          {/* Current and Unit (same row) */}
+          {/* Starting Value and Unit (same row) */}
           <div className="space-y-2">
-            <Label htmlFor="currentValue">Current <span className="text-red-500">*</span></Label>
+            <Label htmlFor="startingValue">Starting Value <span className="text-red-500">*</span></Label>
             <div className="flex items-center gap-2">
               <Input
-                id="currentValue"
+                id="startingValue"
                 type="number"
-                value={currentValue}
+                value={startingValue}
                 onChange={(e) => {
-                  setCurrentValue(e.target.value);
-                  if (errors.currentValue) setErrors(prev => ({ ...prev, currentValue: "" }));
+                  setStartingValue(e.target.value);
+                  if (errors.startingValue) setErrors(prev => ({ ...prev, startingValue: "" }));
                 }}
-                placeholder="Enter current value"
-                className={`flex-1 ${errors.currentValue ? "border-red-500" : ""}`}
-                data-testid="input-current-value"
+                placeholder="Enter starting value"
+                className={`flex-1 ${errors.startingValue ? "border-red-500" : ""}`}
+                data-testid="input-starting-value"
               />
               <Select value={unit} onValueChange={setUnit}>
-                <SelectTrigger className="w-24" data-testid="select-current-unit">
+                <SelectTrigger className="w-24" data-testid="select-starting-unit">
                   <SelectValue placeholder="Unit" />
                 </SelectTrigger>
                 <SelectContent>
@@ -158,8 +158,8 @@ export function AddGoalDialog({ open, onOpenChange, exercises, onSubmit }: AddGo
                 </SelectContent>
               </Select>
             </div>
-            {errors.currentValue && (
-              <p className="text-sm text-red-500">{errors.currentValue}</p>
+            {errors.startingValue && (
+              <p className="text-sm text-red-500">{errors.startingValue}</p>
             )}
           </div>
 

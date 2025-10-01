@@ -29,20 +29,26 @@ async function seedData() {
     const sampleGoals = [
       {
         exerciseId: insertedExercises[0].id, // Bench Press
+        startingValue: 130,
         currentValue: 140,
         targetValue: 150,
+        unit: 'KGs',
         targetDate
       },
       {
         exerciseId: insertedExercises[1].id, // Squats
+        startingValue: 180,
         currentValue: 200,
         targetValue: 220,
+        unit: 'KGs',
         targetDate
       },
       {
         exerciseId: insertedExercises[2].id, // Running
+        startingValue: 3.5,
         currentValue: 4.2,
         targetValue: 5.0,
+        unit: 'KMs',
         targetDate
       }
     ];
