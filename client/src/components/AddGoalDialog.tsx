@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ExerciseCombobox } from "@/components/ui/exercise-combobox";
+import { useCreateExercise } from "@/hooks/useExercises";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 
@@ -50,7 +52,13 @@ export function AddGoalDialog({ open, onOpenChange, exercises, onSubmit }: AddGo
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [calendarOpen, setCalendarOpen] = useState(false);
 
+  const createExerciseMutation = useCreateExercise();
   const selectedExercise = exercises.find(ex => ex.id === exerciseId);
+
+  const handleCreateExercise = async (name: string): Promise<Exercise> => {
+    const newExercise = await createExerciseMutation.mutateAsync({ name });
+    return newExercise;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,21 +113,16 @@ export function AddGoalDialog({ open, onOpenChange, exercises, onSubmit }: AddGo
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="exercise">Exercise <span className="text-red-500">*</span></Label>
-            <Select value={exerciseId} onValueChange={(value) => {
-              setExerciseId(value);
-              if (errors.exerciseId) setErrors(prev => ({ ...prev, exerciseId: "" }));
-            }}>
-              <SelectTrigger data-testid="select-exercise" className={errors.exerciseId ? "border-red-500" : ""}>
-                <SelectValue placeholder="Select an exercise" />
-              </SelectTrigger>
-              <SelectContent className="bg-background">
-                {exercises.map((exercise) => (
-                  <SelectItem key={exercise.id} value={exercise.id} className="text-foreground">
-                    {exercise.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <ExerciseCombobox
+              exercises={exercises}
+              value={exerciseId}
+              onValueChange={(value) => {
+                setExerciseId(value);
+                if (errors.exerciseId) setErrors(prev => ({ ...prev, exerciseId: "" }));
+              }}
+              onCreateExercise={handleCreateExercise}
+              error={errors.exerciseId}
+            />
             {errors.exerciseId && (
               <p className="text-sm text-red-500">{errors.exerciseId}</p>
             )}

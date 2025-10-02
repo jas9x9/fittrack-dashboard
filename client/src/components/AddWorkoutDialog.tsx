@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ExerciseCombobox } from "@/components/ui/exercise-combobox";
+import { useCreateExercise } from "@/hooks/useExercises";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 
@@ -41,17 +43,19 @@ interface AddWorkoutDialogProps {
   }) => void;
 }
 
-export function AddWorkoutDialog({ 
-  open, 
-  onOpenChange, 
-  exercises, 
+export function AddWorkoutDialog({
+  open,
+  onOpenChange,
+  exercises,
   preselectedExerciseId,
-  onSubmit 
+  onSubmit
 }: AddWorkoutDialogProps) {
   const [exerciseId, setExerciseId] = useState(preselectedExerciseId || "");
   const [value, setValue] = useState("");
   const [sessionDate, setSessionDate] = useState<Date>(new Date());
   const [notes, setNotes] = useState("");
+
+  const createExerciseMutation = useCreateExercise();
 
   // Update exerciseId when preselectedExerciseId changes
   useEffect(() => {
@@ -61,6 +65,11 @@ export function AddWorkoutDialog({
   }, [preselectedExerciseId]);
 
   const selectedExercise = exercises.find(ex => ex.id === exerciseId);
+
+  const handleCreateExercise = async (name: string): Promise<Exercise> => {
+    const newExercise = await createExerciseMutation.mutateAsync({ name });
+    return newExercise;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,18 +115,12 @@ export function AddWorkoutDialog({
                 data-testid="input-exercise-readonly"
               />
             ) : (
-              <Select value={exerciseId} onValueChange={setExerciseId}>
-                <SelectTrigger data-testid="select-workout-exercise">
-                  <SelectValue placeholder="Select an exercise" />
-                </SelectTrigger>
-                <SelectContent>
-                  {exercises.map((exercise) => (
-                    <SelectItem key={exercise.id} value={exercise.id}>
-                      <span>{exercise.name}</span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <ExerciseCombobox
+                exercises={exercises}
+                value={exerciseId}
+                onValueChange={setExerciseId}
+                onCreateExercise={handleCreateExercise}
+              />
             )}
           </div>
 
