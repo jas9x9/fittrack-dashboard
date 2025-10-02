@@ -28,13 +28,7 @@ export default defineConfig({
     outDir: path.resolve(import.meta.dirname, "dist/client"),
     emptyOutDir: true,
     // Production optimizations
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true, // Remove console logs in production
-        drop_debugger: true,
-      },
-    },
+    minify: 'esbuild', // Use esbuild instead of terser for faster builds
     rollupOptions: {
       output: {
         // Code splitting for better caching
