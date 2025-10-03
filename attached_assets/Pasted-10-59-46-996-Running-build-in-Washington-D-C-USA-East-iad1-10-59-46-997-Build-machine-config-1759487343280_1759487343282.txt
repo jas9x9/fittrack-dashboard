@@ -1,0 +1,62 @@
+10:59:46.996 Running build in Washington, D.C., USA (East) – iad1
+10:59:46.997 Build machine configuration: 2 cores, 8 GB
+10:59:47.012 Cloning github.com/jas9x9/fittrack-dashboard (Branch: main, Commit: 447f9a3)
+10:59:47.020 Skipping build cache, deployment was triggered without cache.
+10:59:47.484 Cloning completed: 472.000ms
+10:59:47.798 Running "vercel build"
+10:59:48.554 Vercel CLI 48.1.6
+10:59:49.322 Running "install" command: `npm install`...
+11:00:03.862 
+11:00:03.867 added 464 packages, and audited 465 packages in 14s
+11:00:03.867 
+11:00:03.868 62 packages are looking for funding
+11:00:03.868   run `npm fund` for details
+11:00:03.876 
+11:00:03.877 6 vulnerabilities (3 low, 3 moderate)
+11:00:03.877 
+11:00:03.877 To address all issues, run:
+11:00:03.877   npm audit fix
+11:00:03.878 
+11:00:03.878 Run `npm audit` for details.
+11:00:04.133 
+11:00:04.135 > rest-express@1.0.0 build
+11:00:04.136 > vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+11:00:04.136 
+11:00:04.396 [36mvite v5.4.19 [32mbuilding for production...[36m[39m
+11:00:04.448 transforming...
+11:00:04.690 Browserslist: browsers data (caniuse-lite) is 12 months old. Please run:
+11:00:04.690   npx update-browserslist-db@latest
+11:00:04.691   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+11:00:05.752 
+11:00:05.752 A PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.
+11:00:12.674 [32m✓[39m 3354 modules transformed.
+11:00:13.034 rendering chunks...
+11:00:14.132 computing gzip size...
+11:00:14.191 [2m../dist/client/[22m[32mindex.html                 [39m[1m[2m  2.64 kB[22m[1m[22m[2m │ gzip:   1.02 kB[22m
+11:00:14.192 [2m../dist/client/[22m[2massets/[22m[35mindex-DxbkdK59.css  [39m[1m[2m 72.76 kB[22m[1m[22m[2m │ gzip:  11.72 kB[22m
+11:00:14.192 [2m../dist/client/[22m[2massets/[22m[36mrouter-BU3Tbfwg.js  [39m[1m[2m 39.50 kB[22m[1m[22m[2m │ gzip:  11.99 kB[22m[2m │ map:   143.73 kB[22m
+11:00:14.196 [2m../dist/client/[22m[2massets/[22m[36mui-B9Z5UvCe.js      [39m[1m[2m 44.55 kB[22m[1m[22m[2m │ gzip:  14.27 kB[22m[2m │ map:   199.36 kB[22m
+11:00:14.196 [2m../dist/client/[22m[2massets/[22m[36mvendor-Cf32WN5a.js  [39m[1m[2m141.41 kB[22m[1m[22m[2m │ gzip:  45.48 kB[22m[2m │ map:   344.55 kB[22m
+11:00:14.196 [2m../dist/client/[22m[2massets/[22m[36mindex-DTnYSEfx.js   [39m[1m[2m595.93 kB[22m[1m[22m[2m │ gzip: 172.33 kB[22m[2m │ map: 2,705.12 kB[22m
+11:00:14.196 [32m✓ built in 9.77s[39m
+11:00:14.302 
+11:00:14.302   dist/index.js  36.0kb
+11:00:14.302 
+11:00:14.302 ⚡ Done in 14ms
+11:00:14.345 Installing dependencies...
+11:00:17.988 
+11:00:17.988 added 35 packages in 4s
+11:00:17.989 
+11:00:17.989 64 packages are looking for funding
+11:00:17.989   run `npm fund` for details
+11:00:18.254 Using TypeScript 5.6.3 (local user-provided)
+11:00:24.722 server/utils/logger.ts(184,3): error TS2322: Type '(chunk?: any, encoding?: any) => void' is not assignable to type '{ (cb?: (() => void) | undefined): Response<any, Record<string, any>>; (chunk: any, cb?: (() => void) | undefined): Response<any, Record<string, any>>; (chunk: any, encoding: BufferEncoding, cb?: (() => void) | undefined): Response<...>; }'.
+11:00:24.723   Type 'void' is not assignable to type 'Response<any, Record<string, any>>'.
+11:00:24.723 
+11:00:33.884 Build Completed in /vercel/output [45s]
+11:00:34.179 Deploying outputs...
+11:00:42.709 Deployment completed
+11:00:45.603 Creating build cache...
+11:01:02.545 Created build cache: 16.937s
+11:01:02.546 Uploading build cache [78.70 MB]
+11:01:03.646 Build cache uploaded: 1.105s

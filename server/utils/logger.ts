@@ -184,8 +184,8 @@ export const requestLogger = (req: Request, res: Response, next: Function) => {
   res.end = function(chunk?: any, encoding?: any) {
     const responseTime = Date.now() - startTime;
     logger.logRequest(req, res, responseTime);
-    originalEnd.call(res, chunk, encoding);
-  };
+    return originalEnd.call(res, chunk, encoding);
+  } as any;
 
   next();
 };
