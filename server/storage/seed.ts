@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { db } from './database';
+import { db } from './database.js';
 import { exercises, goals, workoutProgress } from '../../shared/schema.js';
 
 async function seedData() {
