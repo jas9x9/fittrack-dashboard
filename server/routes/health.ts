@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { healthCheck } from "../storage/database";
-import { logger } from "../utils/logger";
+import { healthCheck } from "../storage/database.js";
+import { logger } from "../utils/logger.js";
 
 export const healthRouter = Router();
 

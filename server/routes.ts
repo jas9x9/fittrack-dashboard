@@ -1,13 +1,13 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { json } from "express";
-import { corsHandler, securityHeaders, requestLogger, rateLimiter, errorHandler } from "./middleware";
-import { exercisesRouter } from "./routes/exercises";
-import { goalsRouter } from "./routes/goals";
-import { workoutProgressRouter } from "./routes/workoutProgress";
-import { healthRouter } from "./routes/health";
-import { clientErrorsRouter } from "./routes/clientErrors";
-import { metricsRouter } from "./routes/metrics";
+import { corsHandler, securityHeaders, requestLogger, rateLimiter, errorHandler } from "./middleware.js";
+import { exercisesRouter } from "./routes/exercises.js";
+import { goalsRouter } from "./routes/goals.js";
+import { workoutProgressRouter } from "./routes/workoutProgress.js";
+import { healthRouter } from "./routes/health.js";
+import { clientErrorsRouter } from "./routes/clientErrors.js";
+import { metricsRouter } from "./routes/metrics.js";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Middleware setup
