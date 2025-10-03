@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { storage } from "../storage.js";
-import { insertGoalSchema } from "@shared/schema";
+import { insertGoalSchema } from "../../shared/schema.js";
 
 export const goalsRouter = Router();
 

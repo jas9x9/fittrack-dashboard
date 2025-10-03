@@ -1,5 +1,5 @@
 import { db } from './storage/database.js';
-import { exercises, goals, workoutProgress } from '@shared/schema';
+import { exercises, goals, workoutProgress } from '../shared/schema.js';
 import { asc } from 'drizzle-orm';
 import type {
   Exercise,
@@ -10,7 +10,7 @@ import type {
   WorkoutProgress,
   InsertWorkoutProgress,
   WorkoutProgressWithExercise
-} from '@shared/schema';
+} from '../shared/schema.js';
 import { eq, desc } from 'drizzle-orm';
 
 export interface IStorage {

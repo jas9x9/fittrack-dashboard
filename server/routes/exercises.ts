@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { storage } from "../storage.js";
-import { insertExerciseSchema } from "@shared/schema";
+import { insertExerciseSchema } from "../../shared/schema.js";
 import { z } from "zod";
 
 export const exercisesRouter = Router();

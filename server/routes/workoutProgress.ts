@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { storage } from "../storage.js";
-import { insertWorkoutProgressSchema } from "@shared/schema";
+import { insertWorkoutProgressSchema } from "../../shared/schema.js";
 
 export const workoutProgressRouter = Router();
 
