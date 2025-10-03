@@ -23,6 +23,13 @@ async function initializeApp() {
 }
 
 export default async function handler(req: any, res: any) {
-  const expressApp = await initializeApp();
-  return expressApp(req, res);
+  await initializeApp();
+
+  // Remove /api prefix from the path for Express routing
+  const originalUrl = req.url;
+  if (originalUrl.startsWith('/api')) {
+    req.url = originalUrl.substring(4) || '/';
+  }
+
+  return app(req, res);
 }
