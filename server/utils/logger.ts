@@ -181,11 +181,11 @@ export const requestLogger = (req: Request, res: Response, next: Function) => {
 
   // Override res.end to log response
   const originalEnd = res.end;
-  res.end = function(chunk?: any, encoding?: any) {
+  res.end = function(chunk?: any, encoding?: any, cb?: any) {
     const responseTime = Date.now() - startTime;
     logger.logRequest(req, res, responseTime);
-    return originalEnd.call(res, chunk, encoding);
-  } as any;
+    return originalEnd.call(this, chunk, encoding, cb);
+  };
 
   next();
 };
