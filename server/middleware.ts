@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { ZodError } from "zod";
-import { config } from "./config/config";
-import { logger } from "./utils/logger";
+import { config } from "./config/config.js";
+import { logger } from "./utils/logger.js";
 
 // Error handling middleware
 export function errorHandler(err: any, req: Request, res: Response, next: NextFunction) {

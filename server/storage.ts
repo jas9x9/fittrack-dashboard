@@ -1,4 +1,4 @@
-import { db } from './storage/database';
+import { db } from './storage/database.js';
 import { exercises, goals, workoutProgress } from '@shared/schema';
 import { asc } from 'drizzle-orm';
 import type {
