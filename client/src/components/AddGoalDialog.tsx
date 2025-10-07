@@ -141,7 +141,7 @@ export function AddGoalDialog({ open, onOpenChange, exercises, onSubmit }: AddGo
                   if (errors.startingValue) setErrors(prev => ({ ...prev, startingValue: "" }));
                 }}
                 placeholder="Enter starting value"
-                className={`flex-1 ${errors.startingValue ? "border-red-500" : ""}`}
+                className={`flex-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${errors.startingValue ? "border-red-500" : ""}`}
                 data-testid="input-starting-value"
               />
               <Select value={unit} onValueChange={setUnit}>
@@ -179,7 +179,7 @@ export function AddGoalDialog({ open, onOpenChange, exercises, onSubmit }: AddGo
                   if (errors.targetValue) setErrors(prev => ({ ...prev, targetValue: "" }));
                 }}
                 placeholder="Enter target value"
-                className={`flex-1 ${errors.targetValue ? "border-red-500" : ""}`}
+                className={`flex-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${errors.targetValue ? "border-red-500" : ""}`}
                 data-testid="input-target-value"
               />
               <Select value={unit} onValueChange={setUnit}>

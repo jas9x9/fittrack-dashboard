@@ -197,7 +197,7 @@ export function EditGoalDialog({ open, onOpenChange, goal, exercises, onSubmit, 
                   if (errors.targetValue) setErrors(prev => ({ ...prev, targetValue: "" }));
                 }}
                 placeholder="Enter target value"
-                className={`flex-1 ${errors.targetValue ? "border-red-500" : ""}`}
+                className={`flex-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${errors.targetValue ? "border-red-500" : ""}`}
                 data-testid="input-target-value"
               />
               <Select value={unit} onValueChange={setUnit}>
