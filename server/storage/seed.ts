@@ -61,24 +61,24 @@ async function seedData() {
       {
         exerciseId: insertedExercises[0].id, // Bench Press
         value: 135,
-        progressDate: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000), // 1 week ago
+        progressDate: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 1 week ago
         notes: 'Good form, felt strong'
       },
       {
         exerciseId: insertedExercises[0].id, // Bench Press
         value: 140,
-        progressDate: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
+        progressDate: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
       },
       {
         exerciseId: insertedExercises[2].id, // Running
         value: 3.8,
-        progressDate: new Date(today.getTime() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
+        progressDate: new Date(today.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
         notes: 'Morning run, felt good'
       },
       {
         exerciseId: insertedExercises[2].id, // Running
         value: 4.2,
-        progressDate: new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000), // Yesterday
+        progressDate: new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString(), // Yesterday
       }
     ];
 

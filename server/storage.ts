@@ -140,14 +140,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createWorkoutProgress(progress: InsertWorkoutProgress): Promise<WorkoutProgress> {
-    console.log('🔍 STORAGE LAYER - Received progress data:', JSON.stringify(progress, null, 2));
-    console.log('🔍 progressDate value:', progress.progressDate);
-    console.log('🔍 progressDate type:', typeof progress.progressDate);
-    console.log('🔍 progressDate instanceof Date:', progress.progressDate instanceof Date);
-
     const result = await db.insert(workoutProgress).values(progress).returning();
-
-    console.log('🔍 STORAGE LAYER - Database returned:', JSON.stringify(result[0], null, 2));
 
     // Auto-update the goal's current value (find the latest progress for this exercise)
     const latestProgress = await db
