@@ -101,7 +101,7 @@ export function ExerciseCombobox({
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} modal={false}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -119,8 +119,8 @@ export function ExerciseCombobox({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
-        <Command shouldFilter={false}>
+      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 bg-background" align="start">
+        <Command shouldFilter={false} className="bg-background">
           <CommandInput
             placeholder="Search or add exercise..."
             value={searchValue}
