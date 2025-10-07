@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -10,18 +10,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ExerciseCombobox } from "@/components/ui/exercise-combobox";
-import { useCreateExercise } from "@/hooks/useExercises";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 
@@ -34,7 +24,7 @@ interface AddWorkoutDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   exercises: Exercise[];
-  preselectedExerciseId?: string;
+  preselectedExerciseId: string; // Now required - dialog always logs workout for a specific exercise
   onSubmit: (workout: {
     exerciseId: string;
     value: number;
@@ -50,42 +40,24 @@ export function AddWorkoutDialog({
   preselectedExerciseId,
   onSubmit
 }: AddWorkoutDialogProps) {
-  const [exerciseId, setExerciseId] = useState(preselectedExerciseId || "");
   const [value, setValue] = useState("");
   const [sessionDate, setSessionDate] = useState<Date>(new Date());
   const [notes, setNotes] = useState("");
 
-  const createExerciseMutation = useCreateExercise();
-
-  // Update exerciseId when preselectedExerciseId changes
-  useEffect(() => {
-    if (preselectedExerciseId) {
-      setExerciseId(preselectedExerciseId);
-    }
-  }, [preselectedExerciseId]);
-
-  const selectedExercise = exercises.find(ex => ex.id === exerciseId);
-
-  const handleCreateExercise = async (name: string): Promise<Exercise> => {
-    const newExercise = await createExerciseMutation.mutateAsync({ name });
-    return newExercise;
-  };
+  const selectedExercise = exercises.find(ex => ex.id === preselectedExerciseId);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!exerciseId || !value) return;
+    if (!value) return;
 
     onSubmit({
-      exerciseId,
+      exerciseId: preselectedExerciseId,
       value: parseFloat(value),
       date: sessionDate,
       notes: notes.trim() || undefined,
     });
 
     // Reset form
-    if (!preselectedExerciseId) {
-      setExerciseId("");
-    }
     setValue("");
     setSessionDate(new Date());
     setNotes("");
@@ -96,34 +68,14 @@ export function AddWorkoutDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Log Workout Session</DialogTitle>
+          <DialogTitle>
+            {selectedExercise ? `Log Workout - ${selectedExercise.name}` : "Log Workout"}
+          </DialogTitle>
           <DialogDescription>
-            Record your workout performance to track your progress over time.
+            Record your performance for this exercise.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="exercise">Exercise</Label>
-            {preselectedExerciseId ? (
-              <Input
-                id="exercise"
-                type="text"
-                value={selectedExercise?.name || ''}
-                readOnly
-                disabled
-                className="bg-muted cursor-not-allowed"
-                data-testid="input-exercise-readonly"
-              />
-            ) : (
-              <ExerciseCombobox
-                exercises={exercises}
-                value={exerciseId}
-                onValueChange={setExerciseId}
-                onCreateExercise={handleCreateExercise}
-              />
-            )}
-          </div>
-
           <div className="space-y-2">
             <Label htmlFor="value">
               Performance Value

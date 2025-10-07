@@ -347,7 +347,7 @@ export default function Goals() {
           if (!open) setSelectedExerciseId(undefined);
         }}
         exercises={exercises || []}
-        preselectedExerciseId={selectedExerciseId}
+        preselectedExerciseId={selectedExerciseId!}
         onSubmit={handleAddWorkout}
       />
 

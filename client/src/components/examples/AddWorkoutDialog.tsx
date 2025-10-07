@@ -25,6 +25,7 @@ export default function AddWorkoutDialogExample() {
         open={open}
         onOpenChange={setOpen}
         exercises={mockExercises}
+        preselectedExerciseId="1"
         onSubmit={handleSubmit}
       />
     </div>
