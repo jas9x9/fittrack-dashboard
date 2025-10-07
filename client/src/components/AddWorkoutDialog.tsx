@@ -43,6 +43,7 @@ export function AddWorkoutDialog({
   const [value, setValue] = useState("");
   const [sessionDate, setSessionDate] = useState<Date>(new Date());
   const [notes, setNotes] = useState("");
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   const selectedExercise = exercises.find(ex => ex.id === preselectedExerciseId);
 
@@ -87,13 +88,14 @@ export function AddWorkoutDialog({
               value={value}
               onChange={(e) => setValue(e.target.value)}
               data-testid="input-workout-value"
+              className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               required
             />
           </div>
 
           <div className="space-y-2">
             <Label>Workout Date</Label>
-            <Popover>
+            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
@@ -108,7 +110,12 @@ export function AddWorkoutDialog({
                 <Calendar
                   mode="single"
                   selected={sessionDate}
-                  onSelect={(date) => date && setSessionDate(date)}
+                  onSelect={(date) => {
+                    if (date) {
+                      setSessionDate(date);
+                      setCalendarOpen(false);
+                    }
+                  }}
                   disabled={(date) => date > new Date()}
                   initialFocus
                 />
