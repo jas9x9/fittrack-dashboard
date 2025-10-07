@@ -27,7 +27,7 @@ export const workoutProgress = pgTable("workoutProgress", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   exerciseId: varchar("exercise_id").references(() => exercises.id, { onDelete: 'cascade' }).notNull(),
   value: real("value").notNull(),
-  progressDate: timestamp("progress_date").defaultNow().notNull(),
+  progressDate: timestamp("progress_date", { mode: 'string' }).notNull().defaultNow(),
   notes: text("notes"),
 });
 
@@ -49,9 +49,9 @@ export const insertGoalSchema = createInsertSchema(goals).omit({
 
 export const insertWorkoutProgressSchema = createInsertSchema(workoutProgress).omit({
   id: true,
-  progressDate: true,
 }).extend({
   value: z.coerce.number().positive(),
+  progressDate: z.string().datetime(), // Keep as string, Drizzle will handle conversion
 });
 
 // Types

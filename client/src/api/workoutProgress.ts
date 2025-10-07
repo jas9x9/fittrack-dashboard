@@ -41,7 +41,20 @@ export const workoutProgressApi = {
 
   // Log new progress (auto-updates goals)
   async create(data: CreateWorkoutProgressRequest): Promise<WorkoutProgress> {
-    const response = await apiClient.post<WorkoutProgressApiResponse>('/workout-progress', data);
+    // Ensure we always have a date (use provided date or current date)
+    const dateToUse = data.progressDate || new Date();
+
+    // Normalize to noon to avoid timezone issues
+    const normalizedDate = new Date(dateToUse);
+    normalizedDate.setHours(12, 0, 0, 0);
+
+    // Convert Date to ISO string for API
+    const apiData = {
+      ...data,
+      progressDate: normalizedDate.toISOString(),
+    };
+
+    const response = await apiClient.post<WorkoutProgressApiResponse>('/workout-progress', apiData);
     return apiConverters.workoutProgress(response);
   },
 

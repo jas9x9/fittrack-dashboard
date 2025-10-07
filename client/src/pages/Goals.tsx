@@ -156,6 +156,7 @@ export default function Goals() {
     const progressData: CreateWorkoutProgressRequest = {
       exerciseId: workoutData.exerciseId,
       value: workoutData.value,
+      progressDate: workoutData.date, // Include the date from the form
       notes: workoutData.notes,
     };
 
@@ -175,6 +176,7 @@ export default function Goals() {
     const progressData: CreateWorkoutProgressRequest = {
       exerciseId: edgeCaseData.workoutData.exerciseId,
       value: edgeCaseData.workoutData.value,
+      progressDate: edgeCaseData.workoutData.date, // Include the date from the form
       notes: edgeCaseData.workoutData.notes,
     };
 
@@ -214,6 +216,7 @@ export default function Goals() {
     const progressData: CreateWorkoutProgressRequest = {
       exerciseId: edgeCaseData.workoutData.exerciseId,
       value: edgeCaseData.workoutData.value,
+      progressDate: edgeCaseData.workoutData.date, // Include the date from the form
       notes: edgeCaseData.workoutData.notes,
     };
 

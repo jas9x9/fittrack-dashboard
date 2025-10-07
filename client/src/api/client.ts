@@ -284,6 +284,7 @@ export interface UpdateGoalRequest {
 export interface CreateWorkoutProgressRequest {
   exerciseId: string;
   value: number;
+  progressDate?: Date; // Optional date, defaults to now if not provided
   notes?: string;
 }
 

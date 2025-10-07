@@ -69,7 +69,15 @@ workoutProgressRouter.get('/recent', async (req, res, next) => {
 // POST /api/workout-progress - Log new progress
 workoutProgressRouter.post('/', async (req, res, next) => {
   try {
+    console.log('📥 RAW REQUEST BODY:', JSON.stringify(req.body, null, 2));
+    console.log('📥 progressDate from request:', req.body.progressDate);
+    console.log('📥 Type of progressDate:', typeof req.body.progressDate);
+
     const validatedData = insertWorkoutProgressSchema.parse(req.body);
+
+    console.log('✅ VALIDATED DATA:', JSON.stringify(validatedData, null, 2));
+    console.log('✅ progressDate after validation:', validatedData.progressDate);
+    console.log('✅ Type after validation:', typeof validatedData.progressDate);
 
     // Business logic validation
     if (validatedData.value <= 0) {
@@ -80,8 +88,12 @@ workoutProgressRouter.post('/', async (req, res, next) => {
 
     // The storage layer will automatically update goal currentValue
     const progress = await storage.createWorkoutProgress(validatedData);
+
+    console.log('💾 STORED PROGRESS:', JSON.stringify(progress, null, 2));
+
     res.status(201).json(progress);
   } catch (error) {
+    console.error('❌ ERROR:', error);
     next(error);
   }
 });
